@@ -31,6 +31,9 @@ Write Playwright functional and visual regression tests for use case $ARGUMENTS,
 - Add or change a view without adding/updating its visual regression baseline. Reference screenshots are committed
   to the repo and compared pixel-by-pixel on every run (testing.md §5.1) — a new or restyled view with no baseline
   is a coverage gap, not an oversight to fix later.
+- Accept a baseline screenshot that doesn't match `docs/guidelines/design-system.md` (wrong tokens, missing
+  confirmation banner, ad hoc component). A visual regression baseline that locks in a drifted implementation is
+  worse than no baseline — it makes the drift the new "correct" state.
 
 ## Workflow
 
@@ -51,6 +54,8 @@ Write Playwright functional and visual regression tests for use case $ARGUMENTS,
 
 ## Resources
 
+- `docs/guidelines/design-system.md` and `docs/guidelines/design-mockup.html` — what a correct baseline screenshot
+  should actually look like.
 - `docs/guidelines/testing.md` §5 — E2E strategy, visual regression workflow, browser scope.
 - `docs/use-cases/UC-*.md` — the flows, copy, and navigation to verify.
 - `docs/use-cases/UC-010-view-application-error.md` and `UC-011-clinic-user-login.md` — the auth/error scenarios
