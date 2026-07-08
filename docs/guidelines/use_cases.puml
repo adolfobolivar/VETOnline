@@ -1,0 +1,35 @@
+@startuml Use Cases Overview
+left to right direction
+
+actor "Visitor" as visitor
+actor "Clinic User" as clinicuser
+
+rectangle "VETOnline" {
+    usecase "UC-001\nView Welcome Page" as UC001
+    usecase "UC-002\nView Veterinarians" as UC002
+    usecase "UC-003\nRegister New Owner" as UC003
+    usecase "UC-004\nFind Owners by Last Name" as UC004
+    usecase "UC-005\nView Owner Details" as UC005
+    usecase "UC-006\nUpdate Owner" as UC006
+    usecase "UC-007\nAdd Pet to Owner" as UC007
+    usecase "UC-008\nUpdate Pet" as UC008
+    usecase "UC-009\nBook Visit for Pet" as UC009
+    usecase "UC-010\nView Application Error" as UC010
+    usecase "UC-011\nClinic User Login" as UC011
+}
+
+visitor --> UC001
+visitor --> UC002
+visitor --> UC010
+
+clinicuser --> UC003
+clinicuser --> UC004
+clinicuser --> UC005
+clinicuser --> UC006
+clinicuser --> UC007
+clinicuser --> UC008
+clinicuser --> UC009
+clinicuser --> UC010
+clinicuser --> UC011
+
+@enduml
