@@ -25,6 +25,9 @@ This project is built specs-first. Before implementing or changing behavior, che
 - `docs/guidelines/architecture.md` — tech stack, layering, connection management, auth boundary, pagination
   contract, case-sensitivity/collation decisions.
 - `docs/guidelines/testing.md` — testing strategy, fixture requirements, and the UC↔test traceability matrix.
+- `aiup-fastapi-react/` — the Construction-phase plugin for this stack: `/alembic-migration`,
+  `/implement-backend`, `/implement-frontend`, `/terraform-module`, `/pytest-test`, `/playwright-test`. Use these
+  rather than implementing a use case by hand — each skill already encodes the `DO NOT`s in this file.
 - `docs/use-cases/UC-001` through `UC-011` — one file per use case (main flow, alternative flows, business rules).
   Every backend/frontend behavior change should map to a business rule (`BR-xxx`) in one of these files; if it
   doesn't, either the code or the use case is wrong.
