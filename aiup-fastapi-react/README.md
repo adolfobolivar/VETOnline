@@ -75,7 +75,3 @@ package (see the [design doc](../docs/superpowers/specs/2026-07-08-aiup-fastapi-
 - A Terraform project targeting AWS for infrastructure
 - Optional: Docker (for the Terraform MCP server) and `uv`/`uvx` (for the AWS Documentation MCP server) — see
   [`rules/mcp-servers.md`](rules/mcp-servers.md)
-
-## License
-
-MIT · part of the [VETOnline](https://github.com/adolfobolivar/VETOnline) repository.
