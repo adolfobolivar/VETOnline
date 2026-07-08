@@ -16,6 +16,8 @@ experiment — see `docs/guidelines/vision.md` for what it actually is and who i
 - `docs/guidelines/use_cases.puml` — one-page PlantUML overview of actors and all 11 use cases.
 - `docs/guidelines/architecture.md` — technical architecture and infrastructure decisions.
 - `docs/guidelines/testing.md` — testing strategy and use-case-to-test traceability.
+- `docs/guidelines/design-system.md` / `design-mockup.html` — the frontend's visual identity: color/type tokens,
+  component patterns, and a working reference build you can open directly in a browser.
 - `docs/use-cases/` — one spec per use case (UC-001 through UC-011): main flow, alternative flows, business rules.
 - `aiup-fastapi-react/` — the Construction-phase plugin for this project's stack (FastAPI/React/Terraform), built
   because no equivalent existed in the AIUP marketplace; see its own README for details.
@@ -65,7 +67,13 @@ found *because* the next step forced the previous one to be concrete.
    backend/frontend implementation, infrastructure, and tests, each with a stack-specific `DO NOT` list grounded in
    decisions your own docs already made. This repo's `aiup-fastapi-react/` is that plugin for FastAPI + React +
    Terraform/AWS. → `aiup-fastapi-react/`.
-10. **Only then, implementation.** Code is written against the specs above, not the other way around. If a business
+10. **Visual direction, before UI construction.** If the product has a frontend, a UI-implementation skill needs a
+    visual specification the same way it needs a use case — a named color/type/component token system, not "make it
+    look nice." Anchor it to a concrete reference if you have one, validate it with a working mockup (not just a
+    written description) before building real screens against it, and wire both into the Construction skills'
+    `Resources`/`DO NOT` lists so independently-built screens still look like one product. → `design-system.md`,
+    `design-mockup.html`.
+11. **Only then, implementation.** Code is written against the specs above, not the other way around. If a business
     rule isn't traceable to a `BR-xxx`, either the code or the spec is wrong — one of them has to change.
 
 Steps 2–5 map directly to the `aiup-core` plugin's skills (`requirements`, `entity-model`, `use-case-diagram`,

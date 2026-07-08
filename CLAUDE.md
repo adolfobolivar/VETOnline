@@ -25,6 +25,9 @@ This project is built specs-first. Before implementing or changing behavior, che
 - `docs/guidelines/architecture.md` — tech stack, layering, connection management, auth boundary, pagination
   contract, case-sensitivity/collation decisions.
 - `docs/guidelines/testing.md` — testing strategy, fixture requirements, and the UC↔test traceability matrix.
+- `docs/guidelines/design-system.md` and `docs/guidelines/design-mockup.html` — color/type/component tokens for the
+  frontend, plus a working, self-contained reference build (open the `.html` directly in a browser). Any UI work
+  follows this, not ad hoc styling.
 - `aiup-fastapi-react/` — the Construction-phase plugin for this stack: `/alembic-migration`,
   `/implement-backend`, `/implement-frontend`, `/terraform-module`, `/pytest-test`, `/playwright-test`. Use these
   rather than implementing a use case by hand — each skill already encodes the `DO NOT`s in this file.
