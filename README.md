@@ -12,8 +12,6 @@ experiment — see `docs/guidelines/vision.md` for what it actually is and who i
 
 Two groups, on purpose: everything under **Specifications** is text written before any code, and read by both
 humans and the Construction skills; everything under **Implementation** is either those skills or what they produce.
-See the [note on `aiup-fastapi-react/`](#a-note-on-aiup-fastapi-react) below for why it's grouped with code rather
-than with specs, despite being text itself.
 
 ### Specifications
 
@@ -37,16 +35,6 @@ than with specs, despite being text itself.
   `/alembic-migration`.
 - `frontend/` *(not yet created)* — React, produced by `/implement-frontend`, following `design-system.md`.
 - `terraform/` *(not yet created)* — AWS infrastructure, produced by `/terraform-module`.
-
-#### A note on `aiup-fastapi-react/`
-
-It's text (skill definitions and MCP config), not compiled/executed code — but it's grouped with Implementation, not
-Specifications, because it isn't read the same way the specs are: nobody consults it to understand *what the product
-does*, and it doesn't describe VETOnline at all. It's the tooling that turns the specs into `backend/`, `frontend/`,
-and `terraform/`, so it lives with what it produces. It also intentionally mirrors the AIUP marketplace's
-`aiup-vaadin-jooq` package shape (see its own README), which is a top-level package directory, not a
-`.claude/`-nested one — matching that convention was judged more valuable here than the more common "dotfolder means
-tooling" signal, since a reader already familiar with the marketplace should recognize the pattern immediately.
 
 ## The Spec-Driven Process (How to Repeat This)
 
