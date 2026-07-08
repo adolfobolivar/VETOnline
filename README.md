@@ -17,6 +17,8 @@ experiment — see `docs/guidelines/vision.md` for what it actually is and who i
 - `docs/guidelines/architecture.md` — technical architecture and infrastructure decisions.
 - `docs/guidelines/testing.md` — testing strategy and use-case-to-test traceability.
 - `docs/use-cases/` — one spec per use case (UC-001 through UC-011): main flow, alternative flows, business rules.
+- `aiup-fastapi-react/` — the Construction-phase plugin for this project's stack (FastAPI/React/Terraform), built
+  because no equivalent existed in the AIUP marketplace; see its own README for details.
 - `CLAUDE.md` — instructions and conventions for AI assistants working in this repo.
 
 ## The Spec-Driven Process (How to Repeat This)
@@ -57,12 +59,19 @@ found *because* the next step forced the previous one to be concrete.
    against what's supposed to exist. Every finding gets resolved as an explicit decision — fixed, deferred with a
    reason, or rejected — never silently ignored. This is what surfaced the missing entity model, the missing auth
    use case, and the unmeasurable NFRs in this repo's own history.
-9. **Only then, implementation.** Code is written against the specs above, not the other way around. If a business
-   rule isn't traceable to a `BR-xxx`, either the code or the spec is wrong — one of them has to change.
+9. **Construction tooling, before construction.** If a Construction-phase plugin doesn't already exist for your
+   stack (check the AIUP marketplace first), build one before writing application code by hand — skills that read
+   your own specs (entity model, use cases, architecture, testing strategy) and generate migrations,
+   backend/frontend implementation, infrastructure, and tests, each with a stack-specific `DO NOT` list grounded in
+   decisions your own docs already made. This repo's `aiup-fastapi-react/` is that plugin for FastAPI + React +
+   Terraform/AWS. → `aiup-fastapi-react/`.
+10. **Only then, implementation.** Code is written against the specs above, not the other way around. If a business
+    rule isn't traceable to a `BR-xxx`, either the code or the spec is wrong — one of them has to change.
 
 Steps 2–5 map directly to the `aiup-core` plugin's skills (`requirements`, `entity-model`, `use-case-diagram`,
 `use-case-spec`); steps 1, 6, and 7 were produced through iterative brainstorming/critique rather than a dedicated
 skill, since this marketplace's core plugin doesn't (yet) ship one for vision/architecture/testing docs specifically.
+Step 9 mirrors the marketplace's own `aiup-vaadin-jooq` pattern, adapted to a new stack.
 
 ## References
 
