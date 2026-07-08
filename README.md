@@ -10,6 +10,13 @@ experiment — see `docs/guidelines/vision.md` for what it actually is and who i
 
 ## Project Structure
 
+Two groups, on purpose: everything under **Specifications** is text written before any code, and read by both
+humans and the Construction skills; everything under **Implementation** is either those skills or what they produce.
+See the [note on `aiup-fastapi-react/`](#a-note-on-aiup-fastapi-react) below for why it's grouped with code rather
+than with specs, despite being text itself.
+
+### Specifications
+
 - `docs/guidelines/vision.md` — scope, actors, objectives, explicit non-goals.
 - `docs/guidelines/requirements.md` — functional/non-functional requirements and constraints catalog.
 - `docs/guidelines/entity_model.md` — ER diagram and attribute tables for every persisted entity.
@@ -19,9 +26,27 @@ experiment — see `docs/guidelines/vision.md` for what it actually is and who i
 - `docs/guidelines/design-system.md` / `design-mockup.html` — the frontend's visual identity: color/type tokens,
   component patterns, and a working reference build you can open directly in a browser.
 - `docs/use-cases/` — one spec per use case (UC-001 through UC-011): main flow, alternative flows, business rules.
-- `aiup-fastapi-react/` — the Construction-phase plugin for this project's stack (FastAPI/React/Terraform), built
-  because no equivalent existed in the AIUP marketplace; see its own README for details.
 - `CLAUDE.md` — instructions and conventions for AI assistants working in this repo.
+
+### Implementation
+
+- `aiup-fastapi-react/` — the Construction-phase plugin for this project's stack (FastAPI/React/Terraform): the
+  skills that read the specs above and produce the code below. Built because no equivalent existed in the AIUP
+  marketplace; see its own README for details.
+- `backend/` *(not yet created)* — FastAPI + SQLAlchemy/Alembic, produced by `/implement-backend` and
+  `/alembic-migration`.
+- `frontend/` *(not yet created)* — React, produced by `/implement-frontend`, following `design-system.md`.
+- `terraform/` *(not yet created)* — AWS infrastructure, produced by `/terraform-module`.
+
+#### A note on `aiup-fastapi-react/`
+
+It's text (skill definitions and MCP config), not compiled/executed code — but it's grouped with Implementation, not
+Specifications, because it isn't read the same way the specs are: nobody consults it to understand *what the product
+does*, and it doesn't describe VETOnline at all. It's the tooling that turns the specs into `backend/`, `frontend/`,
+and `terraform/`, so it lives with what it produces. It also intentionally mirrors the AIUP marketplace's
+`aiup-vaadin-jooq` package shape (see its own README), which is a top-level package directory, not a
+`.claude/`-nested one — matching that convention was judged more valuable here than the more common "dotfolder means
+tooling" signal, since a reader already familiar with the marketplace should recognize the pattern immediately.
 
 ## The Spec-Driven Process (How to Repeat This)
 
@@ -93,3 +118,7 @@ Background material and prior art informing this experiment and the architecture
   takeaway so far: SPA is fast, simple, and awesome; revisit only if the app's needs later point toward SSR.
 
 ## Notes / Lessons Learned
+
+- **Frontend design:** anchor to a concrete reference, pull its real values (not a paraphrased impression), validate
+  with a working mockup, then wire the tokens into the Construction skills so screens can't drift. →
+  `design-system.md`, `design-mockup.html`.
