@@ -1,0 +1,13 @@
+{
+  "name": "vetonline-plugins",
+  "owner": {
+    "name": "adolfobolivar"
+  },
+  "plugins": [
+    {
+      "name": "aiup-fastapi-react",
+      "source": "./",
+      "description": "Construction-phase skills for VETOnline's FastAPI + React + Terraform/AWS stack."
+    }
+  ]
+}

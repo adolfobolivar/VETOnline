@@ -36,6 +36,30 @@ humans and the Construction skills; everything under **Implementation** is eithe
 - `frontend/` *(not yet created)* — React, produced by `/implement-frontend`, following `design-system.md`.
 - `terraform/` *(not yet created)* — AWS infrastructure, produced by `/terraform-module`.
 
+## Local Prerequisites (macOS)
+
+Software needed on your Mac before you can build/run the app or deploy `terraform/` to AWS. Versions shown are what
+was verified installed while writing this; treat them as a floor, not a ceiling.
+
+| Tool | Purpose | Status |
+| :--- | :--- | :--- |
+| **Terraform** (>= 1.5) | Provision AWS infra in `terraform/` | ✅ installed (v1.15.8) |
+| **AWS CLI v2** | Authenticate to AWS; invoke the migration Lambda post-`apply` | ✅ installed (2.35.19) — run `aws configure` (or an SSO profile) so `aws sts get-caller-identity` succeeds before any `terraform apply` |
+| **tflint** | Terraform static analysis — a CI gate (architecture.md §4.2) | ✅ installed (0.63.1) |
+| **checkov** | Terraform security/misconfiguration scanning — a CI gate | ✅ installed (3.3.0) |
+| **uv** | Python package/dependency manager for `backend/` | ✅ installed (0.11.21) |
+| **Python** (3.11+) | Backend runtime, managed by `uv` | ✅ installed (3.13.5) |
+| **Node.js / npm** | `frontend/` build tooling | ✅ installed (Node v26.5.0 / npm 11.17.0) |
+| **Docker** (optional) | Runs the HashiCorp Terraform MCP server (`aiup-fastapi-react/.mcp.json`) for AI-assisted infra work | only needed if using that MCP server |
+
+Per-environment Terraform inputs live in `terraform/environments/<env>/`:
+- `input.yaml` — non-sensitive sizing/topology/roster config (region, VPC CIDR, Aurora capacity, Lambda
+  concurrency, Clinic User list); committed to the repo (architecture.md §5.2).
+- `secrets.yaml` — local-only AWS credentials used to run Terraform from your machine; **gitignored**, never
+  committed. Fill in your own values before running `terraform plan`/`apply`.
+
+See `CLAUDE.md` for the actual build/run/test commands once prerequisites are in place.
+
 ## The Spec-Driven Process (How to Repeat This)
 
 This section is the actual deliverable of the experiment: a general sequence for building software spec-first,
@@ -116,3 +140,13 @@ Background material and prior art informing this experiment and the architecture
   under-specified skill description (named one core verb instead of the concrete constructs it actually produces)
   and a skill with no executable template, prose-only where a copy-paste code skeleton was needed. →
   `aiup-fastapi-react/skills/`.
+- **A folder of `SKILL.md` files isn't enough:** Claude Code only discovers skills that are either bundled in an
+  installed plugin or placed in `.claude/skills/`. The fix is a local, non-hosted marketplace —
+  `.claude-plugin/marketplace.json` plus `plugin.json`, with the marketplace's plugin `source` pointing at a
+  relative path — no external repo or publishing required, same mechanism a GitHub-hosted marketplace uses. →
+  `aiup-fastapi-react/.claude-plugin/`.
+- **Terraform's remote state backend can't bootstrap itself:** Terraform resolves the `backend` block before any
+  variables are evaluated, so the S3 bucket + DynamoDB lock table an environment depends on can't be created by
+  that same environment's module, and can't read its bucket/table names from `input.yaml` either. `dev` and `prod`
+  are also separate AWS accounts, so each needs its own small, local-state bootstrap module applied once by hand,
+  before that environment's first `terraform init`. → `terraform/bootstrap/`.

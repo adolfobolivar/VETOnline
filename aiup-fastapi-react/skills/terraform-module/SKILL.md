@@ -33,6 +33,29 @@ not write application code (`/implement-backend`, `/implement-frontend`) or migr
 - Skip the remote state backend. Every environment's state lives in the versioned S3 bucket + DynamoDB lock table
   (architecture.md §4.1) — never a local `.tfstate` file.
 
+## Bootstrap Prerequisite (Read Before Any Environment Root Module)
+
+The S3 bucket + DynamoDB lock table the DO NOT list above requires do not create themselves — `terraform init` for
+an environment's `backend "s3" {}` block fails if they don't already exist, and that block can't read
+`state_bucket_name`/`lock_table_name` from `input.yaml` either (Terraform resolves the backend before any
+variables/locals). Both are handled by a separate, already-scaffolded bootstrap step, once per AWS account:
+
+- `terraform/bootstrap/<env>/` — a small, local-state-only root module (not wired to any remote backend, since it's
+  what creates the backend) that provisions just the state bucket and lock table for that account. `dev` and `prod`
+  are separate AWS accounts in this project, so each has its own copy under `bootstrap/dev/` and `bootstrap/prod/`,
+  but each reads its credentials from `../../environments/<env>/secrets.yaml` rather than keeping a second copy —
+  `bootstrap/<env>/` and `environments/<env>/` always target the same AWS account, so one credentials file per
+  account, not one per module. Apply this by hand, once per account, before ever running `terraform init` in the
+  corresponding `terraform/environments/<env>/`.
+- `terraform/environments/<env>/backend.hcl` — the partial backend config (bucket/key/region/dynamodb_table) an
+  environment's root module is initialized with via `terraform init -backend-config=backend.hcl`. Its values must
+  match that environment's `bootstrap/<env>/input.yaml` exactly. This `.hcl` file is the one deliberate exception to
+  the "no separate var files, only `input.yaml`" rule — it exists only because of Terraform's own backend-resolution
+  ordering, not because this project reintroduced `.tfvars`.
+
+Confirm both exist for the target environment before scaffolding that environment's root module; if they don't,
+build the bootstrap module first (it is out of scope for $ARGUMENTS unless the user is explicitly asking for it).
+
 ## Workflow
 
 1. Read `docs/guidelines/architecture.md` §5 for the full input-variable matrix and the `input.yaml` pattern, plus
