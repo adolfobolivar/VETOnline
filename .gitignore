@@ -28,6 +28,10 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
+# Terraform per-account secrets (AWS credentials) — never commit, input.yaml is fine.
+# One file per account, shared by that account's environments/ and bootstrap/ modules.
+terraform/environments/*/secrets.yaml
+
 # Editors
 .vscode/
 .idea/

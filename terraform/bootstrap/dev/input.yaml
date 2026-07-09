@@ -1,0 +1,12 @@
+# Non-sensitive config for bootstrapping the `dev` AWS account's Terraform remote-state
+# backend (architecture.md §4.1). Committed — nothing here is a secret.
+#
+# state_bucket_name must be globally unique across ALL of S3 (not just this account) — suffixed
+# with the date this name was chosen (YYYYMMDD) to make a collision unlikely. This is not a
+# hard guarantee the way an AWS account ID suffix would be — if `terraform apply` fails with a
+# "bucket already exists" error, change the suffix (e.g. append your account ID too) and retry.
+
+environment: "dev"
+aws_region: "us-east-1"
+state_bucket_name: "vetonline-dev-tfstate-20260709"
+lock_table_name: "vetonline-dev-tfstate-lock"

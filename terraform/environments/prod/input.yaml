@@ -1,0 +1,35 @@
+# Per-environment Terraform configuration for `prod`, read via `yamldecode(file("input.yaml"))`
+# into `local.input` (docs/guidelines/architecture.md §5.2). Committed to the repo — unlike
+# secrets.yaml, nothing here is sensitive, only sizing/topology and a staff roster.
+#
+# prod is a separate AWS account from dev — see terraform/bootstrap/prod/ for that account's
+# state-backend bootstrap, and secrets.yaml (gitignored) in this directory for its credentials.
+#
+# Full variable matrix and rationale: docs/guidelines/architecture.md §5.1.
+
+environment: "prod"
+
+aws_region: "us-east-1"
+
+vpc_cidr: "10.1.0.0/16"
+
+# Multi-AZ for actual high availability, unlike dev's cost-optimized 2 AZs.
+availability_zones:
+  - "us-east-1a"
+  - "us-east-1b"
+  - "us-east-1c"
+
+# Aurora Serverless v2 capacity range (ACUs) — higher ceiling than dev to handle real traffic.
+db_min_capacity: 0.5
+db_max_capacity: 4
+
+# 14-day retention in prod vs. 7 in dev (requirements.md NFR-013).
+db_backup_retention_days: 14
+
+# Max concurrent Lambda executions, bounding Aurora connections (requirements.md NFR-012).
+lambda_reserved_concurrency: 20
+
+# Initial Clinic User roster (UC-011). Replace with real staff before applying.
+clinic_users:
+  - name: "Jane Doe"
+    email: "jane.doe@example.com"

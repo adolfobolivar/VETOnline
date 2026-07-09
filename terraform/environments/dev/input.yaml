@@ -1,0 +1,40 @@
+# Per-environment Terraform configuration for `dev`, read via `yamldecode(file("input.yaml"))`
+# into `local.input` (docs/guidelines/architecture.md §5.2). Committed to the repo — unlike
+# secrets.yaml, nothing here is sensitive, only sizing/topology and a staff roster.
+#
+# Full variable matrix and rationale: docs/guidelines/architecture.md §5.1.
+
+# Environment prefix used in resource names and the `Environment` tag.
+environment: "dev"
+
+# Physical AWS region for this environment.
+aws_region: "us-east-1"
+
+# Primary CIDR block for the VPC.
+vpc_cidr: "10.0.0.0/16"
+
+# Availability zones for subnets. Aurora requires at least 2 for its subnet group even in a
+# single-AZ, low-cost dev setup — prod uses more for actual multi-AZ high availability.
+availability_zones:
+  - "us-east-1a"
+  - "us-east-1b"
+
+# Aurora Serverless v2 capacity range (ACUs). Kept low for a low-cost, low-traffic dev
+# environment; db_max_capacity must still be sized to comfortably provide the connection
+# headroom lambda_reserved_concurrency below needs (architecture.md §2.4).
+db_min_capacity: 0.5
+db_max_capacity: 2
+
+# Automated backup / point-in-time recovery retention window in days.
+# 7 in dev, 14 in prod (requirements.md NFR-013).
+db_backup_retention_days: 7
+
+# Max concurrent Lambda executions, bounding Aurora connections (requirements.md NFR-012).
+lambda_reserved_concurrency: 20
+
+# Initial Clinic User roster (UC-011). Terraform-managed `aws_cognito_user` resources are
+# created from this list — add an entry and `terraform apply` to onboard a new staff member.
+# Replace with real staff before applying.
+clinic_users:
+  - name: "Jane Doe"
+    email: "jane.doe@example.com"

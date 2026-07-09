@@ -1,0 +1,8 @@
+{
+  "name": "aiup-fastapi-react",
+  "description": "Construction-phase skills for VETOnline's FastAPI + React + Terraform/AWS stack: implement-backend, implement-frontend, alembic-migration, terraform-module, pytest-test, playwright-test.",
+  "version": "1.0.0",
+  "author": {
+    "name": "adolfobolivar"
+  }
+}
