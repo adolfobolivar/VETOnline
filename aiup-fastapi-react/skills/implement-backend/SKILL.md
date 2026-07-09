@@ -54,7 +54,64 @@ in a service/domain layer. Don't create tests here — use `/pytest-test`. Don't
    exists"` field error, UC-005 A1's 404).
 8. Apply the pagination contract for any list/infinite-scroll endpoint.
 9. Run the backend locally (`uv run uvicorn app.main:app --reload`) and manually exercise the main flow and every
-   alternative flow before considering the use case implemented.
+   alternative flow. **If any flow fails, or its status/payload doesn't match the use case exactly, fix it and
+   re-run.** Repeat until every flow — main and every alternative — passes; don't consider the use case implemented
+   while any of them is broken.
+
+## Example: Domain Exception → HTTP Response (UC-007)
+
+The thin-router / domain-exception pattern referenced throughout this skill, made concrete with UC-007 BR-001
+(case-insensitive duplicate pet name → the `"already exists"` field error). Register exception handlers once in
+`main.py` so individual routers never need a `try`/`except` — that's what keeps them thin.
+
+```python
+# app/services/exceptions.py
+class DomainError(Exception):
+    """Base for business-rule violations the router layer translates to HTTP responses."""
+
+class DuplicateNameError(DomainError):
+    def __init__(self, field: str, message: str = "already exists"):
+        self.field = field
+        self.message = message
+
+class NotFoundError(DomainError):
+    pass
+
+
+# app/services/pet_service.py
+def add_pet(db: Session, owner_id: int, data: PetCreate) -> Pet:
+    exists = (
+        db.query(Pet)
+        .filter(Pet.owner_id == owner_id, func.lower(Pet.name) == data.name.lower())
+        .first()
+    )
+    if exists:
+        raise DuplicateNameError(field="name")
+    pet = Pet(owner_id=owner_id, **data.model_dump())
+    db.add(pet)
+    db.commit()
+    return pet
+
+
+# app/main.py — registered once, applies to every router
+@app.exception_handler(DuplicateNameError)
+async def duplicate_name_handler(request: Request, exc: DuplicateNameError):
+    return JSONResponse(status_code=400, content={"field": exc.field, "error": exc.message})
+
+@app.exception_handler(NotFoundError)
+async def not_found_handler(request: Request, exc: NotFoundError):
+    return JSONResponse(status_code=404, content={"error": "not found"})
+
+
+# app/routers/pets.py — thin: parse/validate, delegate, nothing else
+@router.post("/owners/{owner_id}/pets", status_code=201)
+def create_pet(owner_id: int, data: PetCreate, db: Session = Depends(get_db)):
+    pet = pet_service.add_pet(db, owner_id, data)
+    return PetOut.model_validate(pet)
+```
+
+Follow this shape for the other domain exceptions this project needs (e.g. an ownership-mismatch error for UC-009
+BR-003) — one small exception class per business rule, one handler each, routers stay free of `try`/`except`.
 
 ## Resources
 

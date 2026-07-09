@@ -110,3 +110,9 @@ Background material and prior art informing this experiment and the architecture
 - **Frontend design:** anchor to a concrete reference, pull its real values (not a paraphrased impression), validate
   with a working mockup, then wire the tokens into the Construction skills so screens can't drift. →
   `design-system.md`, `design-mockup.html`.
+- **Skill quality evaluation:** a `SKILL.md` that reads fine on review can still be missing what actually makes it
+  usable — run it through [Tessl](https://tessl.io/registry/skills/github/adolfobolivar/VETOnline)'s automated
+  evaluations rather than trusting a self-review. It caught two real gaps in `aiup-fastapi-react/`: an
+  under-specified skill description (named one core verb instead of the concrete constructs it actually produces)
+  and a skill with no executable template, prose-only where a copy-paste code skeleton was needed. →
+  `aiup-fastapi-react/skills/`.
