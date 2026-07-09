@@ -1,9 +1,11 @@
 ---
 name: alembic-migration
 description: >
-  Creates versioned Alembic migration scripts (schema and reference-data/seed migrations) from the entity model.
-  Use when the user asks to "create a migration", "add a database migration", "write an Alembic migration", "seed
-  reference data", "add a column", or mentions Alembic, schema migration, or database schema changes.
+  Creates versioned Alembic migration scripts with tables, columns, primary keys, foreign keys, unique and
+  functional constraints (e.g. case-insensitive uniqueness), and reference-data seeds, all derived from the entity
+  model. Use when the user asks to "create a migration", "add a database migration", "write an Alembic migration",
+  "add a column", "add a foreign key", "seed reference data", or mentions Alembic, schema migration, or database
+  schema changes.
 ---
 
 # Alembic Migration
