@@ -150,3 +150,11 @@ Background material and prior art informing this experiment and the architecture
   that same environment's module, and can't read its bucket/table names from `input.yaml` either. `dev` and `prod`
   are also separate AWS accounts, so each needs its own small, local-state bootstrap module applied once by hand,
   before that environment's first `terraform init`. → `terraform/bootstrap/`.
+- **An infrastructure layer's dependencies aren't always other infrastructure:** Aurora depending on the network
+  layer's VPC is the obvious kind of dependency, spotted from reading architecture.md alone. The application layer's
+  Lambda depending on `backend/app` existing at all (an `/implement-backend` artifact, not a Terraform output) — and
+  on that package being built for Lambda's actual runtime platform, not the laptop running `terraform apply`,
+  since compiled dependencies like `psycopg[binary]` ship platform-specific wheels — is the kind that only surfaces
+  once you actually try to build and run the thing. Both are now called out explicitly (architecture.md §2.3,
+  `/terraform-module`'s "Application Layer Prerequisite") so the next pass doesn't rediscover them the hard way. →
+  `terraform/modules/application/`.

@@ -35,6 +35,13 @@ in a service/domain layer. Don't create tests here — use `/pytest-test`. Don't
   NFR-001) — don't return an unbounded result set.
 - Cause N+1 queries where the use case specifies eager loading — e.g. UC-005 explicitly requires loading an owner
   with their pets and each pet's visits together, not lazily per-pet.
+- Add a new SQLAlchemy model file without importing it from `app/db/models/__init__.py`. A model that's never
+  imported anywhere never registers with `Base.metadata`, so a `ForeignKey` on another model pointing at its table
+  fails with `NoReferencedTableError` — but only at request time (when the mapper actually resolves the relationship),
+  not at import time or under `mypy`/`ruff`. This one is easy to miss without actually running the endpoint (step 9
+  below is exactly why that step isn't optional). Relatedly: don't `import app.db.models` inside `app/main.py` to
+  trigger this registration — that binds the name `app` in that module's namespace, colliding with the
+  `app = FastAPI(...)` variable. Use `from app.db.models import Owner, Pet, ...` instead.
 
 ## Workflow
 

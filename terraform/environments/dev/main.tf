@@ -72,3 +72,17 @@ module "cognito" {
   environment  = local.input.environment
   clinic_users = local.clinic_users
 }
+
+module "application" {
+  source = "../../modules/application"
+
+  environment                   = local.input.environment
+  vpc_id                        = module.network.vpc_id
+  private_subnet_ids            = module.network.private_subnet_ids
+  aurora_security_group_id      = module.aurora.security_group_id
+  aurora_cluster_endpoint       = module.aurora.cluster_endpoint
+  aurora_database_name          = module.aurora.database_name
+  aurora_master_user_secret_arn = module.aurora.master_user_secret_arn
+  cognito_user_pool_arn         = module.cognito.user_pool_arn
+  lambda_reserved_concurrency   = local.input.lambda_reserved_concurrency
+}

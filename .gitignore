@@ -36,6 +36,10 @@ terraform/environments/*/secrets.yaml
 # clinic_users.yaml.example (committed) documents the schema with placeholder values.
 terraform/environments/*/clinic_users.yaml
 
+# Lambda packaging build artifacts (zip + cross-platform installed dependencies) — rebuilt by
+# build_lambda.sh on every apply, never committed.
+terraform/modules/application/.build/
+
 # Editors
 .vscode/
 .idea/
