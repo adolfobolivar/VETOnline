@@ -17,6 +17,10 @@ they read as conscious choices rather than oversights:
 - AWS WAF and other perimeter-hardening services are not deployed (§3).
 - Lambda deployments use a canary rollout, but rollback on a bad deploy is currently manual, since there is no alarm
   to trigger an automatic one (§4.2).
+- The application layer's CORS configuration allows any origin (`*`, via a `CORS_ALLOW_ORIGIN` env var defaulting to
+  it) instead of §2.2's CloudFront-domain-scoped policy — there is no CloudFront distribution yet to scope it to,
+  since the frontend hasn't been built. Set that env var to the real distribution domain once it exists; no code
+  change needed at that point.
 
 None of these are architectural limitations — they are conscious choices to move fast now, with a clear list of what
 to revisit once the prototype earns further investment.
@@ -62,6 +66,7 @@ The client interacts exclusively with a React application.
 - **Data Validation:** At this layer, **Pydantic** strictly enforces the API contract (types, required fields, regex patterns such as the 10-digit telephone in UC-003/UC-006), automatically rejecting malformed requests before they reach the business logic.
 - **Business Rule Layer:** Cross-record rules that Pydantic cannot express — duplicate pet name per owner (UC-007/UC-008 BR-001), owner/pet ownership consistency (UC-009 BR-003), birth date not in the future (UC-007/UC-008 BR-002) — live in a service/domain layer between the FastAPI routers and the SQLAlchemy models, not in the Pydantic schemas and not inline in the routers. Routers stay thin: parse/validate the request (Pydantic), delegate to the service layer, map the result or raised domain exception to an HTTP response.
 - **Performance and Latency Strategy (Cold Starts):** Since there are no critical latency requirements in the initial phase, the architecture accepts the baseline AWS Lambda cold start time to optimize costs.
+- **Cross-Platform Packaging:** The Lambda deployment package must be built targeting Lambda's actual runtime platform (Linux, `arm64`) explicitly, not whatever platform the build machine runs. Compiled dependencies (e.g. `psycopg[binary]`) ship platform-specific wheels, and a wheel built on a developer's Mac won't load on Lambda — a plain `zip` of a locally-installed virtualenv silently produces a package that fails at import time. Use `uv pip install --python-platform aarch64-manylinux_2_28 --python-version 3.12 --target <dir>` (or the equivalent for the chosen Lambda architecture) instead.
 
 ### 2.4. Persistence and Database Layer
 - **ORM:** The business model communicates with the database through **SQLAlchemy**. Database engine connections are initialized at the global level (outside the main Lambda handler) to reuse TCP connections within a warm execution environment.

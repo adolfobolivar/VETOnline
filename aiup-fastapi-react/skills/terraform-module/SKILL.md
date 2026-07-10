@@ -56,6 +56,20 @@ variables/locals). Both are handled by a separate, already-scaffolded bootstrap 
 Confirm both exist for the target environment before scaffolding that environment's root module; if they don't,
 build the bootstrap module first (it is out of scope for $ARGUMENTS unless the user is explicitly asking for it).
 
+## Application Layer Prerequisite (Read Before Building the Lambda/API Gateway Module)
+
+Unlike the network/persistence/identity layers, the application layer (Lambda + API Gateway) depends on an artifact
+from an entirely different tool, not just another Terraform module's outputs: `aws_lambda_function` needs an actual
+deployment package, which means `backend/app` (from `/implement-backend`) has to exist first. There's nothing to
+package otherwise. If it doesn't exist yet, building this layer is either out of scope for now, or needs a
+placeholder handler the user has explicitly asked for (see architecture.md's note on this trade-off).
+
+Once `backend/app` exists, the deployment package still can't just be `zip -r` of a locally-installed virtualenv:
+compiled dependencies (e.g. `psycopg[binary]`) ship platform-specific wheels, and a wheel built on a developer's Mac
+won't load on Lambda's Linux runtime (architecture.md §2.3, "Cross-Platform Packaging"). Cross-install explicitly
+(`uv pip install --python-platform aarch64-manylinux_2_28 --python-version 3.12 --target <dir>`, or the equivalent
+for the chosen architecture) rather than assuming the build machine's platform matches Lambda's.
+
 ## Workflow
 
 1. Read `docs/guidelines/architecture.md` §5 for the full input-variable matrix and the `input.yaml` pattern, plus

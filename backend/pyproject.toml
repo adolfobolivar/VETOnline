@@ -1,0 +1,27 @@
+[project]
+name = "vetonline-backend"
+version = "0.1.0"
+description = "VETOnline backend: FastAPI + SQLAlchemy + Alembic, deployed on AWS Lambda."
+requires-python = ">=3.11"
+dependencies = [
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "psycopg[binary]>=3.1",
+    "fastapi>=0.115",
+    "pydantic>=2.9",
+    "mangum>=0.19",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.10",
+    "ruff>=0.6",
+    "pytest>=8.0",
+    "uvicorn[standard]>=0.30",
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.mypy]
+strict = true
