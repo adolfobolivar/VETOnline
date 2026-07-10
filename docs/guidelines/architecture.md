@@ -75,7 +75,7 @@ The client interacts exclusively with a React application.
 - **Reference Data Seeding:** Baseline lookup data required by the use cases — pet types (UC-007 precondition) and vet specialties — is inserted via Alembic **data migrations** in that same migration chain, so seed data is version-controlled and applied through the same mechanism as schema changes, in every environment, with no separate seeding tool or manual step.
 
 ### 2.5. Identity Provisioning (Clinic User Accounts)
-- **Provisioning Mechanism:** Clinic User accounts (UC-011) are Terraform-managed `aws_cognito_user` resources, driven by a list of staff (name/email) declared in that environment's `input.yaml` (§5). Onboarding a new staff member during this phase is "add an entry to the list, `terraform apply`" — there is no self-service sign-up and no admin UI.
+- **Provisioning Mechanism:** Clinic User accounts (UC-011) are Terraform-managed `aws_cognito_user` resources, driven by a list of staff (name/email) declared in that environment's `clinic_users.yaml` (§5.2) — a separate, gitignored file from `input.yaml`, since a staff roster is real personal data (PII), not the sizing/topology values `input.yaml` holds. Onboarding a new staff member during this phase is "add an entry to the list, `terraform apply`" — there is no self-service sign-up and no admin UI. Temporary passwords are never set in Terraform: omitting them lets Cognito generate one and email it directly to the user as part of its built-in invitation message, so Terraform never holds a plaintext credential.
 - **Initial Credentials:** Users are created with a temporary password and `FORCE_CHANGE_PASSWORD` status, so each Clinic User sets their own password on first login rather than the temporary one being usable long-term.
 - **Deferred:** A self-service admin invite flow (a Clinic User inviting another without touching Terraform) is a plausible future iteration, not built now — it isn't required by any current use case and the Terraform-managed list is sufficient for a small prototype staff roster.
 
@@ -135,9 +135,11 @@ The entire network and persistence topology is exposed through input variables w
 | `db_max_capacity` | `number` | Maximum compute capacity units (ACUs) for Aurora Serverless. | Persistence |
 | `db_backup_retention_days` | `number` | Automated backup/PITR retention window (7 in `dev`, 14 in `prod` — requirements.md NFR-013). | Persistence |
 | `lambda_reserved_concurrency` | `number` | Max concurrent Lambda executions (20 — requirements.md NFR-012), bounding Aurora connections. | Compute / Persistence |
-| `clinic_users` | `list(object)` | Initial Clinic User roster (name/email) for Terraform-managed Cognito accounts (§2.5). | Identity |
 
-### 5.2. Per-Environment Configuration (`input.yaml`)
+`clinic_users` (`list(object)`, the Identity-scope Clinic User roster for §2.5) is deliberately **not** in this
+table/`input.yaml` — see §5.2's `clinic_users.yaml` note below.
+
+### 5.2. Per-Environment Configuration (`input.yaml` and `clinic_users.yaml`)
 Specific values are not stored as HCL `.tfvars` files, but as a plain **`input.yaml`** file per environment, so the
 configuration a non-Terraform reader (or an AI assistant) needs to understand an environment is a flat, readable
 YAML document rather than HCL syntax:
@@ -149,6 +151,12 @@ Each environment's root module reads its own file directly rather than requiring
 Resources then reference `local.input.<key>` (e.g., `local.input.db_max_capacity`). Because each environment's
 `input.yaml` lives inside that environment's own directory, `terraform plan`/`apply` run there need no extra flags —
 the correct file is always the one next to the config being run.
+
+**`clinic_users.yaml`** (same directory, one per environment) holds the Clinic User roster instead — real staff
+names and personal email addresses. Unlike everything in `input.yaml`, this is genuine PII, so the file is
+gitignored and never committed; `clinic_users.yaml.example` (committed) documents the schema with placeholder
+values. Both files are read the same way (`yamldecode(file(...))`), just kept separate so a real staff roster is
+never one accidental `git add -A` away from a public commit.
 
 ### 5.3. Cost Allocation Tagging Strategy
 Serverless architectures can generate unexpected costs if resource consumption is not tracked. An `environment` prefix alone is insufficient. A strict tagging strategy must be enforced at the Terraform AWS provider level using `default_tags`, ensuring the following tags are automatically applied to **every** provisioned resource:

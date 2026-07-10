@@ -32,6 +32,10 @@ override.tf.json
 # One file per account, shared by that account's environments/ and bootstrap/ modules.
 terraform/environments/*/secrets.yaml
 
+# Clinic User roster (UC-011) — real staff names/personal emails (PII), never commit.
+# clinic_users.yaml.example (committed) documents the schema with placeholder values.
+terraform/environments/*/clinic_users.yaml
+
 # Editors
 .vscode/
 .idea/

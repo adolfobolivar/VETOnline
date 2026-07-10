@@ -32,9 +32,6 @@ db_backup_retention_days: 7
 # Max concurrent Lambda executions, bounding Aurora connections (requirements.md NFR-012).
 lambda_reserved_concurrency: 20
 
-# Initial Clinic User roster (UC-011). Terraform-managed `aws_cognito_user` resources are
-# created from this list — add an entry and `terraform apply` to onboard a new staff member.
-# Replace with real staff before applying.
-clinic_users:
-  - name: "Jane Doe"
-    email: "jane.doe@example.com"
+# Clinic User roster (UC-011) is NOT here — it's real staff PII (name + personal email), so it
+# lives in the gitignored clinic_users.yaml in this same directory instead, not this committed
+# file. See clinic_users.yaml.example for the schema.
