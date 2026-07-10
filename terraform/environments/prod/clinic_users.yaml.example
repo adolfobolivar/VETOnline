@@ -1,0 +1,7 @@
+# Schema for clinic_users.yaml (gitignored — contains real PII, so only this example, with
+# placeholder values, is committed). Copy this file to clinic_users.yaml and fill in real
+# staff before applying the cognito module.
+
+clinic_users:
+  - name: "Jane Doe"
+    email: "jane.doe@example.com"
