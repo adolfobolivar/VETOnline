@@ -1,0 +1,19 @@
+/* Self-hosted Lora (design-system.md "Font hosting"): the binaries under
+   src/assets/fonts/ are extracted directly from design-mockup.html's @font-face blocks
+   (same bytes), not re-generated or fetched from Google Fonts at runtime. */
+
+@font-face {
+  font-family: "Lora";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/lora-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Lora";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/lora-600.woff2") format("woff2");
+}

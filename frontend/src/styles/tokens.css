@@ -1,0 +1,98 @@
+/* Design tokens (docs/guidelines/design-system.md). Both themes are first-class — copied
+   verbatim from design-mockup.html, not re-derived. */
+
+:root {
+  --bg: #fbf9f5;
+  --surface: #ffffff;
+  --surface-2: #f3eee4;
+  --text: #111827;
+  --text-muted: #5b6472;
+  --navy: #0a1d2f;
+  --navy-ink: #f2ede3;
+  --gold: #fbcd66;
+  --gold-ink: #4a3708;
+  --teal: #7fa6b3;
+  --teal-ink: #0a1d2f;
+  --border: rgba(10, 29, 47, 0.12);
+  --border-strong: rgba(10, 29, 47, 0.22);
+  --danger: #a83e28;
+  --danger-bg: #fbe9e3;
+  --success: #3e6b4f;
+  --success-bg: #e8f0e9;
+  --shadow: 0 4px 16px rgba(10, 29, 47, 0.08);
+  --shadow-lg: 0 12px 32px rgba(10, 29, 47, 0.14);
+  --radius-s: 0.5rem;
+  --radius-m: 0.875rem;
+  --radius-l: 1.5rem;
+  --radius-full: 999px;
+  --font-display: "Lora", Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #081420;
+    --surface: #0e2131;
+    --surface-2: #0a1a28;
+    --text: #f2ede3;
+    --text-muted: #a9b9c4;
+    --navy: #050d15;
+    --navy-ink: #f2ede3;
+    --gold: #fbcd66;
+    --gold-ink: #2c2004;
+    --teal: #8fb6c2;
+    --teal-ink: #051019;
+    --border: rgba(242, 237, 227, 0.14);
+    --border-strong: rgba(242, 237, 227, 0.26);
+    --danger: #e38a6d;
+    --danger-bg: #2b1712;
+    --success: #86b698;
+    --success-bg: #12241a;
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #081420;
+  --surface: #0e2131;
+  --surface-2: #0a1a28;
+  --text: #f2ede3;
+  --text-muted: #a9b9c4;
+  --navy: #050d15;
+  --navy-ink: #f2ede3;
+  --gold: #fbcd66;
+  --gold-ink: #2c2004;
+  --teal: #8fb6c2;
+  --teal-ink: #051019;
+  --border: rgba(242, 237, 227, 0.14);
+  --border-strong: rgba(242, 237, 227, 0.26);
+  --danger: #e38a6d;
+  --danger-bg: #2b1712;
+  --success: #86b698;
+  --success-bg: #12241a;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme="light"] {
+  --bg: #fbf9f5;
+  --surface: #ffffff;
+  --surface-2: #f3eee4;
+  --text: #111827;
+  --text-muted: #5b6472;
+  --navy: #0a1d2f;
+  --navy-ink: #f2ede3;
+  --gold: #fbcd66;
+  --gold-ink: #4a3708;
+  --teal: #7fa6b3;
+  --teal-ink: #0a1d2f;
+  --border: rgba(10, 29, 47, 0.12);
+  --border-strong: rgba(10, 29, 47, 0.22);
+  --danger: #a83e28;
+  --danger-bg: #fbe9e3;
+  --success: #3e6b4f;
+  --success-bg: #e8f0e9;
+  --shadow: 0 4px 16px rgba(10, 29, 47, 0.08);
+  --shadow-lg: 0 12px 32px rgba(10, 29, 47, 0.14);
+}

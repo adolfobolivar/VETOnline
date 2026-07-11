@@ -1,0 +1,400 @@
+/* Base styles + component classes actually used by the screens built so far (UC-001, UC-003,
+   UC-007, UC-010, UC-011). Adapted directly from docs/guidelines/design-mockup.html — classes
+   not needed yet (vet grid, owner list/details, pet cards) aren't included here; add them
+   alongside the screens that need them rather than guessing the shape in advance. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+a {
+  color: inherit;
+}
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.eyebrow::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+/* ---------- Nav ---------- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--navy);
+  color: var(--navy-ink);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.nav-inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.brand-mark {
+  width: 1.7rem;
+  height: 1.7rem;
+  flex: none;
+}
+.nav-links {
+  display: flex;
+  gap: 1.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.92rem;
+}
+.nav-links a {
+  text-decoration: none;
+  color: rgba(242, 237, 227, 0.78);
+  padding: 0.35rem 0.1rem;
+  border-bottom: 2px solid transparent;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--navy-ink);
+  border-color: var(--gold);
+}
+.nav-user {
+  font-size: 0.85rem;
+  color: rgba(242, 237, 227, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.nav-user strong {
+  color: var(--navy-ink);
+  font-weight: 600;
+}
+
+/* ---------- Section shell ---------- */
+.screen-head {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2.75rem 1.5rem 0;
+}
+.screen-body {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 3.5rem;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-wrap: balance;
+  margin: 0.35rem 0 0;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.65rem 1.3rem;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
+}
+.btn:hover {
+  transform: translateY(-1px);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-primary {
+  background: var(--gold);
+  color: var(--gold-ink);
+  box-shadow: var(--shadow);
+}
+.btn-primary:hover {
+  box-shadow: var(--shadow-lg);
+}
+.btn-secondary {
+  color: var(--teal-ink);
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 12%, transparent);
+}
+.btn-secondary:hover {
+  background: color-mix(in srgb, var(--teal) 22%, transparent);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: var(--border-strong);
+  padding: 0.5rem 1.05rem;
+  font-size: 0.82rem;
+}
+
+/* ---------- Hero (Welcome, UC-001) ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 3rem;
+  align-items: center;
+  padding: 1rem 0 3rem;
+}
+.hero h1 {
+  font-size: clamp(2.1rem, 4vw, 3rem);
+  line-height: 1.12;
+  margin-top: 0.6rem;
+}
+.hero p.lede {
+  max-width: 34rem;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  margin-top: 1rem;
+}
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  flex-wrap: wrap;
+}
+.hero-art {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-l);
+  background: linear-gradient(155deg, var(--navy) 0%, #14324a 65%, var(--teal) 130%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+}
+
+/* ---------- Form fields ---------- */
+.input {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  width: 100%;
+}
+.input:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.field label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Form shell + confirmation banner (signature element) ---------- */
+.form-shell {
+  max-width: 34rem;
+}
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-top: 1.5rem;
+}
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.confirm-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: color-mix(in srgb, var(--gold) 16%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--border-strong));
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-m);
+  padding: 0.95rem 1.2rem;
+  margin-bottom: 1.5rem;
+  animation: banner-in 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.confirm-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--gold-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.confirm-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gold-ink) 80%, var(--text-muted));
+  display: block;
+}
+.confirm-text {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  margin-top: 0.1rem;
+}
+
+.field-error {
+  font-size: 0.8rem;
+  color: var(--danger);
+  margin-top: 0.15rem;
+}
+.input-error {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger-bg) 60%, var(--surface));
+}
+.form-alert {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  background: var(--danger-bg);
+  border: 1px solid color-mix(in srgb, var(--danger) 40%, var(--border-strong));
+  border-radius: var(--radius-m);
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.88rem;
+  color: var(--danger);
+}
+
+/* ---------- Error screen (UC-010) ---------- */
+.error-shell {
+  background: var(--navy);
+  color: var(--navy-ink);
+  border-radius: var(--radius-l);
+  padding: 3.5rem 2.5rem;
+  text-align: center;
+  max-width: 32rem;
+  margin: 1.5rem auto 3rem;
+  box-shadow: var(--shadow-lg);
+}
+.error-shell .eyebrow {
+  color: rgba(242, 237, 227, 0.55);
+  justify-content: center;
+}
+.error-shell h2 {
+  color: var(--navy-ink);
+  font-size: 1.9rem;
+  margin-top: 0.75rem;
+}
+.error-shell p {
+  color: rgba(242, 237, 227, 0.75);
+  max-width: 26rem;
+  margin: 0.9rem auto 1.75rem;
+}
+
+/* ---------- Utility ---------- */
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 760px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .hero-art {
+    order: -1;
+    max-width: 14rem;
+    margin: 0 auto;
+  }
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+  .nav-links {
+    display: none;
+  }
+}
