@@ -35,6 +35,7 @@ Focused on testing isolated functions, pure business logic, and model validation
 * **Framework:** `pytest`
 * **Contract Validation:** Pydantic models are unit tested to ensure that business rules at the API boundary (e.g. ID number format, emails, pet types) natively reject invalid data.
 * **Isolation:** The native `unittest.mock` module (or `pytest-mock`) is used to replace heavy components or network calls.
+* **Documentation:** `backend/tests/README.md` indexes what each test file/test actually covers (implementation-level detail, kept out of this strategy document) and must be kept up to date whenever tests under `backend/tests/` (this section and Section 4) are added, renamed, or removed.
 
 ---
 
