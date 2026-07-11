@@ -351,6 +351,72 @@ h3 {
   color: var(--danger);
 }
 
+/* ---------- Vet grid (UC-002) ---------- */
+.grid-vets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  gap: 1.1rem;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: 1.35rem;
+  box-shadow: var(--shadow);
+}
+.vet-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.vet-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--navy);
+}
+:root[data-theme="dark"] .vet-avatar {
+  color: var(--gold);
+}
+@media (prefers-color-scheme: dark) {
+  .vet-avatar {
+    color: var(--gold);
+  }
+}
+.vet-name {
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  font-weight: 600;
+}
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.pill {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+.pill-accent {
+  border-color: color-mix(in srgb, var(--gold) 60%, var(--border-strong));
+  color: var(--gold-ink);
+  background: color-mix(in srgb, var(--gold) 22%, var(--surface));
+}
+
 /* ---------- Owner search/list (UC-004) ---------- */
 .search-row {
   display: flex;

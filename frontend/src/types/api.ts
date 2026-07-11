@@ -85,3 +85,10 @@ export interface VisitCreate {
   visit_date: string;
   description: string;
 }
+
+export interface VeterinarianOut {
+  id: number;
+  first_name: string;
+  last_name: string;
+  specialties: string[];
+}

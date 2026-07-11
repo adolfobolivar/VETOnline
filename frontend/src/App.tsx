@@ -10,7 +10,7 @@ import { ErrorPage } from "./pages/ErrorPage";
 import { ErrorRoute } from "./pages/ErrorRoute";
 import { FindOwnersPage } from "./pages/FindOwnersPage";
 import { OwnerDetailsPage } from "./pages/OwnerDetailsPage";
-import { VeterinariansPlaceholderPage } from "./pages/VeterinariansPlaceholderPage";
+import { VeterinariansPage } from "./pages/VeterinariansPage";
 import { AddOwnerPage } from "./pages/AddOwnerPage";
 import { AddPetPage } from "./pages/AddPetPage";
 import { EditOwnerPage } from "./pages/EditOwnerPage";
@@ -28,7 +28,7 @@ function App() {
               <Route path="login" element={<LoginPage />} />
               <Route path="oups" element={<OupsPage />} />
               <Route path="error" element={<ErrorRoute />} />
-              <Route path="veterinarians" element={<VeterinariansPlaceholderPage />} />
+              <Route path="veterinarians" element={<VeterinariansPage />} />
               <Route
                 path="owners"
                 element={
