@@ -25,7 +25,10 @@ test('main flow: valid data adds a pet and shows the confirmation banner', async
   await page.locator('#pet-type').selectOption({ label: 'hamster' });
   await page.getByRole('button', { name: 'Add Pet' }).click();
 
+  // Step 6: navigates back to the owner's Owner Details view (UC-005) with the banner.
+  await expect(page).toHaveURL(/\/owners\/\d+$/);
   await expect(page.getByText('New Pet has been Added')).toBeVisible();
+  await expect(page.getByText('Basil')).toBeVisible();
 });
 
 test('add pet form matches the design system baseline', async ({ page }) => {

@@ -6,9 +6,13 @@ export function Nav() {
   const navigate = useNavigate();
 
   async function handleLogout() {
-    // UC-011 A3.
-    await logout();
+    // UC-011 A3: always lands on the welcome page, even when logging out from a
+    // RequireAuth-guarded screen. Navigating away first, before clearing the session, avoids a
+    // race with RequireAuth's own redirect-to-login — if isAuthenticated flips to false while
+    // still mounted under a protected route, RequireAuth's <Navigate to="/login"> can beat this
+    // navigate("/") to the punch, stranding the user on the login form instead of "/".
     navigate("/");
+    await logout();
   }
 
   return (

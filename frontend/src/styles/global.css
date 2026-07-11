@@ -1,7 +1,7 @@
 /* Base styles + component classes actually used by the screens built so far (UC-001, UC-003,
-   UC-007, UC-010, UC-011). Adapted directly from docs/guidelines/design-mockup.html — classes
-   not needed yet (vet grid, owner list/details, pet cards) aren't included here; add them
-   alongside the screens that need them rather than guessing the shape in advance. */
+   UC-004, UC-005, UC-007, UC-010, UC-011). Adapted directly from
+   docs/guidelines/design-mockup.html — classes not needed yet (vet grid) aren't included here;
+   add them alongside the screens that need them rather than guessing the shape in advance. */
 
 * {
   box-sizing: border-box;
@@ -194,6 +194,10 @@ h3 {
   padding: 0.5rem 1.05rem;
   font-size: 0.82rem;
 }
+.btn-sm {
+  padding: 0.42rem 0.9rem;
+  font-size: 0.78rem;
+}
 
 /* ---------- Hero (Welcome, UC-001) ---------- */
 .hero {
@@ -347,6 +351,187 @@ h3 {
   color: var(--danger);
 }
 
+/* ---------- Owner search/list (UC-004) ---------- */
+.search-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+.owner-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.owner-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1.6fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: 0.95rem 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.owner-row:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow);
+}
+.owner-name {
+  font-weight: 600;
+}
+.owner-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.owner-phone {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+.pet-count-chip {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--teal-ink);
+  background: color-mix(in srgb, var(--teal) 24%, var(--surface));
+  border-radius: var(--radius-full);
+  padding: 0.28rem 0.65rem;
+  justify-self: start;
+}
+.load-more-row {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.spinner {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--teal);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Owner details (UC-005) ---------- */
+.owner-card {
+  border-radius: var(--radius-l);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  background: var(--surface);
+}
+.owner-card-head {
+  background: var(--navy);
+  color: var(--navy-ink);
+  padding: 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.owner-card-head h2 {
+  color: var(--navy-ink);
+  font-size: 1.5rem;
+}
+.owner-card-head .owner-meta {
+  color: rgba(242, 237, 227, 0.72);
+}
+.owner-card-body {
+  padding: 1.5rem 1.75rem 1.75rem;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem 2rem;
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+}
+.detail-grid dt {
+  color: rgba(242, 237, 227, 0.6);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.detail-grid dd {
+  margin: 0.15rem 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.pets-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.75rem 0 1rem;
+}
+.pets-heading h3 {
+  font-size: 1.05rem;
+}
+.pet-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 0.85rem;
+  background: var(--surface-2);
+}
+.pet-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.pet-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.pet-meta {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.pet-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.visit-list {
+  margin: 0.85rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.visit-row {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 0.9rem;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-s);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.visit-date {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- Error screen (UC-010) ---------- */
 .error-shell {
   background: var(--navy);
@@ -392,6 +577,13 @@ h3 {
     margin: 0 auto;
   }
   .two-col {
+    grid-template-columns: 1fr;
+  }
+  .owner-row {
+    grid-template-columns: 1fr;
+    row-gap: 0.4rem;
+  }
+  .detail-grid {
     grid-template-columns: 1fr;
   }
   .nav-links {

@@ -8,10 +8,14 @@ import { LoginPage } from "./pages/LoginPage";
 import { OupsPage } from "./pages/OupsPage";
 import { ErrorPage } from "./pages/ErrorPage";
 import { ErrorRoute } from "./pages/ErrorRoute";
-import { OwnersPlaceholderPage } from "./pages/OwnersPlaceholderPage";
+import { FindOwnersPage } from "./pages/FindOwnersPage";
+import { OwnerDetailsPage } from "./pages/OwnerDetailsPage";
 import { VeterinariansPlaceholderPage } from "./pages/VeterinariansPlaceholderPage";
 import { AddOwnerPage } from "./pages/AddOwnerPage";
 import { AddPetPage } from "./pages/AddPetPage";
+import { EditOwnerPlaceholderPage } from "./pages/EditOwnerPlaceholderPage";
+import { EditPetPlaceholderPage } from "./pages/EditPetPlaceholderPage";
+import { AddVisitPlaceholderPage } from "./pages/AddVisitPlaceholderPage";
 
 function App() {
   return (
@@ -25,7 +29,14 @@ function App() {
               <Route path="oups" element={<OupsPage />} />
               <Route path="error" element={<ErrorRoute />} />
               <Route path="veterinarians" element={<VeterinariansPlaceholderPage />} />
-              <Route path="owners" element={<OwnersPlaceholderPage />} />
+              <Route
+                path="owners"
+                element={
+                  <RequireAuth>
+                    <FindOwnersPage />
+                  </RequireAuth>
+                }
+              />
               <Route
                 path="owners/new"
                 element={
@@ -35,10 +46,42 @@ function App() {
                 }
               />
               <Route
+                path="owners/:ownerId"
+                element={
+                  <RequireAuth>
+                    <OwnerDetailsPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="owners/:ownerId/edit"
+                element={
+                  <RequireAuth>
+                    <EditOwnerPlaceholderPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
                 path="owners/:ownerId/pets/new"
                 element={
                   <RequireAuth>
                     <AddPetPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="owners/:ownerId/pets/:petId/edit"
+                element={
+                  <RequireAuth>
+                    <EditPetPlaceholderPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="owners/:ownerId/pets/:petId/visits/new"
+                element={
+                  <RequireAuth>
+                    <AddVisitPlaceholderPage />
                   </RequireAuth>
                 }
               />
