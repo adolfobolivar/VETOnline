@@ -69,7 +69,8 @@ These tests validate the system from the perspective of the real user, deploying
 * **Main Framework:** `Playwright`
 * **Browser Scope:** Only the Chromium project is configured/run (requirements.md C-018 — Chrome is the only supported browser). Firefox and WebKit projects are not added to `playwright.config`, which also keeps CI runtime down.
 * **Functional Tests:** Scripts are written to simulate complete user flows, and must cover each use case's alternative/failure flows, not only its main success scenario (see Section 7).
-* **Auth Flows:** Covers UC-011 end to end (login, invalid credentials, session expiry/refresh, logout) against a dedicated test Cognito user pool, plus a check that an unauthenticated request to a protected page is rejected with HTTP 401 and redirected to login (UC-010 A3).
+* **Auth Flows:** Covers UC-011 end to end (login, invalid credentials, session expiry/refresh, logout) against a dedicated test Cognito account — not a real staff member — plus a check that an unauthenticated request to a protected page is rejected and redirected to login (UC-010 A3). This phase reuses the environment's existing Cognito pool for that account rather than standing up a second pool, a deliberate prototype-phase trade-off (architecture.md §0); revisit once there's a real CI pipeline.
+* **Documentation:** `frontend/e2e/README.md` indexes what each Playwright test file/test actually covers (implementation-level detail, kept out of this strategy document) and must be kept up to date whenever tests under `frontend/e2e/` are added, renamed, or removed.
 
 ### 5.1. Visual Regression (Cost-Control Strategy)
 To avoid "visual blind spots" (CSS errors, form misalignment, or overlapping text) reported in previous phases, Playwright's native screenshot assertion is enabled:

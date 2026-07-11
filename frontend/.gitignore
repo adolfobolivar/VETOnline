@@ -12,6 +12,17 @@ dist
 dist-ssr
 *.local
 
+# E2E test credentials (Cognito test-account username/password, testing.md §5) — unlike
+# .env.development's pool/client ids, a real password belongs in a gitignored file, not the
+# public JS bundle.
+.env.test
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
