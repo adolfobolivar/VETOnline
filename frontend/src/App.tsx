@@ -13,9 +13,9 @@ import { OwnerDetailsPage } from "./pages/OwnerDetailsPage";
 import { VeterinariansPlaceholderPage } from "./pages/VeterinariansPlaceholderPage";
 import { AddOwnerPage } from "./pages/AddOwnerPage";
 import { AddPetPage } from "./pages/AddPetPage";
-import { EditOwnerPlaceholderPage } from "./pages/EditOwnerPlaceholderPage";
-import { EditPetPlaceholderPage } from "./pages/EditPetPlaceholderPage";
-import { AddVisitPlaceholderPage } from "./pages/AddVisitPlaceholderPage";
+import { EditOwnerPage } from "./pages/EditOwnerPage";
+import { EditPetPage } from "./pages/EditPetPage";
+import { AddVisitPage } from "./pages/AddVisitPage";
 
 function App() {
   return (
@@ -57,7 +57,7 @@ function App() {
                 path="owners/:ownerId/edit"
                 element={
                   <RequireAuth>
-                    <EditOwnerPlaceholderPage />
+                    <EditOwnerPage />
                   </RequireAuth>
                 }
               />
@@ -73,7 +73,7 @@ function App() {
                 path="owners/:ownerId/pets/:petId/edit"
                 element={
                   <RequireAuth>
-                    <EditPetPlaceholderPage />
+                    <EditPetPage />
                   </RequireAuth>
                 }
               />
@@ -81,7 +81,7 @@ function App() {
                 path="owners/:ownerId/pets/:petId/visits/new"
                 element={
                   <RequireAuth>
-                    <AddVisitPlaceholderPage />
+                    <AddVisitPage />
                   </RequireAuth>
                 }
               />

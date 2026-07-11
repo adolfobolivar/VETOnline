@@ -74,3 +74,14 @@ export interface OwnerDetailOut {
   telephone: string;
   pets: PetDetailOut[];
 }
+
+export interface PetUpdate {
+  name: string;
+  birth_date: string;
+  pet_type_id?: number;
+}
+
+export interface VisitCreate {
+  visit_date: string;
+  description: string;
+}
