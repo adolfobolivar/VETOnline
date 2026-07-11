@@ -85,6 +85,7 @@ module "application" {
   aurora_master_user_secret_arn = module.aurora.master_user_secret_arn
   cognito_user_pool_arn         = module.cognito.user_pool_arn
   lambda_reserved_concurrency   = local.input.lambda_reserved_concurrency
+  cors_allow_origin             = "https://${module.frontend.cloudfront_domain_name}"
 }
 
 module "migration" {

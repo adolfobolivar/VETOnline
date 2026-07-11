@@ -42,3 +42,8 @@ variable "lambda_reserved_concurrency" {
   type        = number
   description = "Max concurrent Lambda executions (requirements.md NFR-012), bounding Aurora connections, from input.yaml."
 }
+
+variable "cors_allow_origin" {
+  type        = string
+  description = "Origin the API's CORS policy allows (architecture.md §2.2) — the deployed frontend's CloudFront domain (frontend module output)."
+}

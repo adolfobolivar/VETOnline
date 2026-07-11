@@ -32,6 +32,12 @@ not write application code (`/implement-backend`, `/implement-frontend`) or migr
   provisions the secret's existence, not its value in plaintext.
 - Skip the remote state backend. Every environment's state lives in the versioned S3 bucket + DynamoDB lock table
   (architecture.md §4.1) — never a local `.tfstate` file.
+- Hash only `.id` in an `aws_api_gateway_deployment`'s `triggers` block for a resource whose *content* can change
+  in place (e.g. `aws_api_gateway_gateway_response`'s `response_parameters`/`response_templates`, or a method's
+  `request_parameters`). A resource's `.id` is stable across in-place updates, so an edit to a gateway response's
+  CORS headers (for example) updates the API's config but the trigger hash never changes — no new deployment is
+  created, and the live stage silently keeps serving the old behavior. Hash the mutable attribute itself
+  (`jsonencode(...response_parameters)`, etc.) alongside or instead of `.id` for anything not immutable on update.
 
 ## Bootstrap Prerequisite (Read Before Any Environment Root Module)
 

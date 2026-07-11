@@ -17,20 +17,15 @@ they read as conscious choices rather than oversights:
 - AWS WAF and other perimeter-hardening services are not deployed (§3).
 - Lambda deployments use a canary rollout, but rollback on a bad deploy is currently manual, since there is no alarm
   to trigger an automatic one (§4.2).
-- The application layer's CORS configuration allows any origin (`*`, via a `CORS_ALLOW_ORIGIN` env var defaulting to
-  it) instead of §2.2's CloudFront-domain-scoped policy — there is no CloudFront distribution yet to scope it to,
-  since the frontend hasn't been built. Set that env var to the real distribution domain once it exists; no code
-  change needed at that point.
 - The Playwright E2E suite's dedicated test account (testing.md §5) lives in the same Cognito pool as real clinic
   staff, not a second, fully isolated pool — one clearly-fake account, kept out of `clinic_users.yaml`, rather than
   standing up parallel auth/database infrastructure this single-developer, no-CI-yet phase doesn't need. Revisit
   alongside the rest of this list once there's a real CI pipeline.
 - The frontend CloudFront distribution uses AWS's default certificate (`*.cloudfront.net`) rather than a custom
-  domain + ACM certificate, consistent with §2.2's deferred custom domain. AWS hard-locks the viewer-facing security
-  policy to TLSv1 whenever `CloudFrontDefaultCertificate` is true — `minimum_protocol_version` is accepted by the
-  API but silently ignored — so NFR-003 (TLS 1.2+) is **not fully met** for this layer specifically until a custom
-  domain exists. Traffic is still encrypted (HTTPS only, `redirect-to-https`), just not enforced at a 1.2 minimum.
-  Adding a custom domain + ACM certificate resolves both this and the CORS-scoping deferral above at once.
+  domain + ACM certificate. AWS hard-locks the viewer-facing security policy to TLSv1 whenever
+  `CloudFrontDefaultCertificate` is true — `minimum_protocol_version` is accepted by the API but silently ignored —
+  so NFR-003 (TLS 1.2+) is **not fully met** for this layer specifically until a custom domain exists. Traffic is
+  still encrypted (HTTPS only, `redirect-to-https`), just not enforced at a 1.2 minimum.
 
 None of these are architectural limitations — they are conscious choices to move fast now, with a clear list of what
 to revisit once the prototype earns further investment.
