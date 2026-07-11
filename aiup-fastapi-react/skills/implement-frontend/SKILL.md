@@ -28,6 +28,14 @@ endpoint already exists (built via `/implement-backend`); if it doesn't, say so 
   placeholder copy — use the exact strings.
 - Attach the Cognito JWT manually per request. Use the shared Amplify-backed API client (architecture.md §2.1) so
   every request gets the token consistently and 401 handling is centralized in one place, not duplicated per view.
+- Fetch data in a `useEffect` and call `setState` with the result without a cancellation guard. Any effect that
+  fetches and then pre-fills form state — edit/update views are the common case — needs a `cancelled` flag set in
+  the effect's cleanup function and checked before the `setState` call. Without it, React `<StrictMode>`'s dev-mode
+  double-invocation fires two independent fetches, and if the second resolves after the user has already started
+  editing, it silently overwrites their in-progress edit with the original server values — the next submit then
+  sends the unedited data. This is invisible in a production build (StrictMode's double-invoke is dev-only) but
+  fully reproducible against the dev server a Playwright suite runs against; don't mistake the resulting flakiness
+  for a test-timing issue and paper over it with waits — fix the effect.
 - Assume any browser other than the latest Chrome needs to work. Cross-browser compatibility is explicitly out of
   scope (requirements.md C-018) — don't add polyfills or vendor-prefix workarounds for browsers this project doesn't
   support.

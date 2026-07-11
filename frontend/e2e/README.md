@@ -51,3 +51,47 @@ workflow, and browser scope. Update this file's tables when tests are added, ren
 | `A2 > shows the exact BR-002 message` | A2/BR-002: a birth date of tomorrow shows "Birth date must not be in the future." |
 | `A3 > submitting the empty form shows a required error per field` | A3: three required-field errors on an empty submit |
 | `owner not found > submitting against a nonexistent owner shows the not-found error view` | Submitting against a nonexistent owner id navigates to the `/error` not-found variant |
+
+## `uc006-edit-owner.spec.ts` — UC-006 Update Owner
+
+| Test | Checks |
+| :--- | :--- |
+| `main flow: valid changes update the owner and show the confirmation banner` | Main flow: pre-filled form, edited field persists, "Owner Values Updated" banner on Owner Details |
+| `edit owner form matches the design system baseline` | Visual baseline: pre-filled form (fixed, non-unique-suffixed owner data — see the test's own comment on why) |
+| `A1 > blank mandatory fields show field errors and the form-level alert` | A1/BR-001: clearing a pre-filled field shows "This field is required." plus the form-level alert; visual baseline for the error state |
+| `A1 > malformed telephone shows the exact BR-002 message` | A1/BR-002: bad telephone shows "Telephone must be exactly 10 digits." |
+
+## `uc008-edit-pet.spec.ts` — UC-008 Update Pet
+
+| Test | Checks |
+| :--- | :--- |
+| `main flow: valid changes update the pet and show the confirmation banner` | Main flow: pre-filled form (including the type `<select>`, resolved from the owner-detail response's type *name* back to an id — see `EditPetPage.tsx`), edits persist, "Pet details has been edited" banner |
+| `edit pet form matches the design system baseline, pre-filled including type` | Visual baseline: pre-filled form, asserts the type `<select>` actually resolved to a real option before capturing |
+| `A1 > a case-insensitive collision against a different pet is rejected with "already exists"` | A1/BR-001: renaming one pet to collide (case-insensitively) with a second pet under the same owner is rejected; visual baseline for the error state |
+| `A1 > keeping a pet's own name is not treated as a duplicate` | BR-001's exclusion: a pet keeping its own current name while other fields change is not flagged as a duplicate |
+| `A2 > shows the exact BR-002 message` | A2/BR-002: a birth date of tomorrow shows "Birth date must not be in the future." |
+| `A3 > a blank name shows a required error` | A3: clearing the name shows "This field is required." |
+
+## `uc009-add-visit.spec.ts` — UC-009 Book Visit for Pet
+
+| Test | Checks |
+| :--- | :--- |
+| `main flow: valid data books a visit and shows the confirmation banner` | Main flow: BR-002 default-to-today date, visit persists, "Your visit has been booked" banner, new visit visible on Owner Details |
+| `add visit form matches the design system baseline` | Visual baseline: empty form (date field masked — see below) |
+| `previous visits are shown for context on a second visit` | Main-flow step 2: a pet's existing visits are listed for context when booking another |
+| `A1 > shows a required error` | A1/BR-001: blank description shows "This field is required."; visual baseline for the error state (date field masked) |
+| `A2 > pet not owned by the given owner > shows the not-found error view` | A2/BR-003: a pet id that belongs to a *different* owner resolves to the not-found error view |
+| `A3 > owner not found > shows the not-found error view` | A3: a nonexistent owner id resolves to the not-found error view |
+
+Both `uc009` visual baselines mask the `#visit-date` field (`toHaveScreenshot(..., { mask: [...] })`) — it defaults to today's date (BR-002), which is different every day the suite runs, so an unmasked baseline would drift out of date on its own.
+
+## A note on flakiness found while writing UC-006/008/009's tests
+
+Both `uc006` and `uc008` intermittently submitted the pre-filled (unedited) form data instead of
+the test's actual edit, roughly half the time, in a way that looked at first like a Playwright/
+React input-timing race. It turned out to be a real bug: `EditOwnerPage.tsx`/`EditPetPage.tsx`'s
+data-fetching `useEffect` had no guard against React `<StrictMode>`'s dev-mode double-invocation,
+so a second, redundant fetch could resolve *after* the test had already started editing the
+pre-filled form and silently overwrite it. Fixed with a `cancelled` flag in the effect's cleanup
+— see `architecture.md` §2.1 for the general pattern, since it applies to any future page with the
+same fetch-then-pre-fill shape, not just these two.
