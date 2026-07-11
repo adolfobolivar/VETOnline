@@ -97,3 +97,13 @@ module "migration" {
   aurora_database_name          = module.aurora.database_name
   aurora_master_user_secret_arn = module.aurora.master_user_secret_arn
 }
+
+module "frontend" {
+  source = "../../modules/frontend"
+
+  environment                 = local.input.environment
+  api_base_url                = module.application.api_invoke_url
+  aws_region                  = local.input.aws_region
+  cognito_user_pool_id        = module.cognito.user_pool_id
+  cognito_user_pool_client_id = module.cognito.user_pool_client_id
+}

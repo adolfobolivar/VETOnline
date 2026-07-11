@@ -25,6 +25,12 @@ they read as conscious choices rather than oversights:
   staff, not a second, fully isolated pool — one clearly-fake account, kept out of `clinic_users.yaml`, rather than
   standing up parallel auth/database infrastructure this single-developer, no-CI-yet phase doesn't need. Revisit
   alongside the rest of this list once there's a real CI pipeline.
+- The frontend CloudFront distribution uses AWS's default certificate (`*.cloudfront.net`) rather than a custom
+  domain + ACM certificate, consistent with §2.2's deferred custom domain. AWS hard-locks the viewer-facing security
+  policy to TLSv1 whenever `CloudFrontDefaultCertificate` is true — `minimum_protocol_version` is accepted by the
+  API but silently ignored — so NFR-003 (TLS 1.2+) is **not fully met** for this layer specifically until a custom
+  domain exists. Traffic is still encrypted (HTTPS only, `redirect-to-https`), just not enforced at a 1.2 minimum.
+  Adding a custom domain + ACM certificate resolves both this and the CORS-scoping deferral above at once.
 
 None of these are architectural limitations — they are conscious choices to move fast now, with a clear list of what
 to revisit once the prototype earns further investment.
