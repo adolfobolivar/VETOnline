@@ -2,7 +2,6 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiClient, ApiError, UnauthorizedError } from "../lib/apiClient";
 import { parseFieldErrors } from "../lib/fieldErrors";
-import { ConfirmBanner } from "../components/ConfirmBanner";
 import type { OwnerCreate, OwnerOut } from "../types/api";
 
 const emptyForm: OwnerCreate = {
@@ -13,16 +12,14 @@ const emptyForm: OwnerCreate = {
   telephone: "",
 };
 
-/** UC-003 main flow + A1 (validation errors). Owner Details (UC-005) doesn't exist yet, so —
- * unlike the use case's literal step 6 — this shows the confirmation banner on this same
- * screen (matching design-mockup.html's own Add Owner mockup, which pairs the two) instead of
- * navigating to a page that isn't built. */
+/** UC-003 main flow + A1 (validation errors). Step 6: navigates to the Owner Details view
+ * (UC-005) with the confirmation banner's message passed via navigation state, rendered there
+ * — not on this page, per the use case's literal text. */
 export function AddOwnerPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState<OwnerCreate>(emptyForm);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [showAlert, setShowAlert] = useState(false);
-  const [created, setCreated] = useState<OwnerOut | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   function updateField(field: keyof OwnerCreate, value: string) {
@@ -36,8 +33,8 @@ export function AddOwnerPage() {
     setShowAlert(false);
     try {
       const owner = await apiClient.post<OwnerOut>("/owners", form);
-      setCreated(owner);
-      setForm(emptyForm);
+      navigate(`/owners/${owner.id}`, { state: { banner: "New Owner Created" } });
+      return;
     } catch (err) {
       if (err instanceof UnauthorizedError) {
         navigate("/login", { state: { from: "/owners/new" } });
@@ -62,14 +59,6 @@ export function AddOwnerPage() {
       </div>
 
       <div className="form-shell">
-        {created && <ConfirmBanner message="New Owner Created" />}
-        {created && (
-          <p style={{ marginTop: "-1rem", marginBottom: "1.5rem" }}>
-            <Link to="/owners">Back to Find Owners</Link> &middot;{" "}
-            <Link to={`/owners/${created.id}/pets/new`}>Add a pet for {created.first_name}</Link>
-          </p>
-        )}
-
         {showAlert && (
           <div className="form-alert">There was an error in creating the owner.</div>
         )}

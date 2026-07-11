@@ -19,8 +19,11 @@ test('main flow: valid data creates an owner and shows the confirmation banner',
   await page.locator('#tel').fill('6085551023');
   await page.getByRole('button', { name: 'Add Owner' }).click();
 
+  // Step 6: navigates to the new owner's Owner Details view (UC-005) with the banner.
+  await expect(page).toHaveURL(/\/owners\/\d+$/);
   await expect(page.getByText('New Owner Created')).toBeVisible();
-  await expect(page.getByRole('link', { name: /Add a pet for George/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /George Franklin/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Add New Pet' })).toBeVisible();
 });
 
 test('add owner form matches the design system baseline', async ({ page }) => {

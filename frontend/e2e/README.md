@@ -36,7 +36,7 @@ workflow, and browser scope. Update this file's tables when tests are added, ren
 
 | Test | Checks |
 | :--- | :--- |
-| `main flow: valid data creates an owner and shows the confirmation banner` | Main flow, including the "Add a pet for {first_name}" follow-up link |
+| `main flow: valid data creates an owner and shows the confirmation banner` | Main flow: step 6's navigation to the new owner's Owner Details view (UC-005), with the banner shown there |
 | `add owner form matches the design system baseline` | Visual baseline: empty form |
 | `A1 > blank mandatory fields show field errors and the form-level alert` | A1/BR-001: four blank fields each show "This field is required.", plus the form-level alert; visual baseline for the error state |
 | `A1 > malformed telephone shows the exact BR-002 message` | A1/BR-002: bad telephone shows "Telephone must be exactly 10 digits." |

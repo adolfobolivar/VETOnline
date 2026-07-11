@@ -35,3 +35,42 @@ export interface PetTypeOut {
   id: number;
   name: string;
 }
+
+export interface PetSummary {
+  id: number;
+  name: string;
+}
+
+export interface OwnerListOut {
+  id: number;
+  first_name: string;
+  last_name: string;
+  address: string;
+  city: string;
+  telephone: string;
+  pets: PetSummary[];
+}
+
+export interface VisitOut {
+  id: number;
+  visit_date: string;
+  description: string;
+}
+
+export interface PetDetailOut {
+  id: number;
+  name: string;
+  birth_date: string;
+  pet_type: string;
+  visits: VisitOut[];
+}
+
+export interface OwnerDetailOut {
+  id: number;
+  first_name: string;
+  last_name: string;
+  address: string;
+  city: string;
+  telephone: string;
+  pets: PetDetailOut[];
+}

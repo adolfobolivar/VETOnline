@@ -1,14 +1,13 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { apiClient, ApiError, UnauthorizedError } from "../lib/apiClient";
-import { ConfirmBanner } from "../components/ConfirmBanner";
 import type { PetCreate, PetOut, PetTypeOut } from "../types/api";
 
 const emptyForm = { name: "", birth_date: "", pet_type_id: "" };
 
-/** UC-007 main flow + A1 (duplicate name) + A2 (future birth date) + A3 (missing field). Owner
- * Details (UC-005) doesn't exist yet, so — like AddOwnerPage — the confirmation banner shows
- * on this same screen instead of navigating to a page that isn't built. */
+/** UC-007 main flow + A1 (duplicate name) + A2 (future birth date) + A3 (missing field). Step 6:
+ * navigates to the Owner Details view (UC-005) with the confirmation banner's message passed
+ * via navigation state, rendered there — not on this page, per the use case's literal text. */
 export function AddPetPage() {
   const { ownerId } = useParams<{ ownerId: string }>();
   const navigate = useNavigate();
@@ -17,7 +16,6 @@ export function AddPetPage() {
   const [form, setForm] = useState(emptyForm);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [showAlert, setShowAlert] = useState(false);
-  const [created, setCreated] = useState<PetOut | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -61,9 +59,9 @@ export function AddPetPage() {
     };
 
     try {
-      const pet = await apiClient.post<PetOut>(`/owners/${ownerId}/pets`, payload);
-      setCreated(pet);
-      setForm(emptyForm);
+      await apiClient.post<PetOut>(`/owners/${ownerId}/pets`, payload);
+      navigate(`/owners/${ownerId}`, { state: { banner: "New Pet has been Added" } });
+      return;
     } catch (err) {
       if (err instanceof UnauthorizedError) {
         navigate("/login", { state: { from: `/owners/${ownerId}/pets/new` } });
@@ -109,13 +107,6 @@ export function AddPetPage() {
       </div>
 
       <div className="form-shell">
-        {created && <ConfirmBanner message="New Pet has been Added" />}
-        {created && (
-          <p style={{ marginTop: "-1rem", marginBottom: "1.5rem" }}>
-            <Link to="/owners">Back to Find Owners</Link>
-          </p>
-        )}
-
         {showAlert && (
           <div className="form-alert">There was an error adding the pet.</div>
         )}

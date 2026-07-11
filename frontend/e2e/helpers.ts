@@ -13,7 +13,9 @@ export async function login(page: Page, redirectTo = '/owners'): Promise<void> {
 
 /** A fresh, collision-free owner for tests that need one already created (e.g. UC-007 pet
  * tests) without asserting anything about the Add Owner flow itself — goes through the real
- * UI rather than calling the API directly, since this is an E2E suite, not an API test. */
+ * UI rather than calling the API directly, since this is an E2E suite, not an API test.
+ * UC-003 step 6 navigates to the new owner's Owner Details view (UC-005) on success, so the id
+ * is read off that URL rather than a link that no longer exists on this page. */
 export async function createOwnerViaUi(page: Page, lastName: string): Promise<string> {
   await page.goto('/owners/new');
   await page.locator('#fname').fill('E2E');
@@ -23,12 +25,12 @@ export async function createOwnerViaUi(page: Page, lastName: string): Promise<st
   await page.locator('#tel').fill('5555550100');
   await page.getByRole('button', { name: 'Add Owner' }).click();
   await expect(page.getByText('New Owner Created')).toBeVisible();
-  const petLink = page.getByRole('link', { name: /Add a pet for/ });
-  const href = await petLink.getAttribute('href');
-  if (!href) {
-    throw new Error('Expected an "Add a pet for ..." link with an href after creating an owner');
+  await expect(page).toHaveURL(/\/owners\/\d+$/);
+  const match = new URL(page.url()).pathname.match(/^\/owners\/(\d+)$/);
+  if (!match) {
+    throw new Error(`Expected to land on /owners/{id} after creating an owner, got ${page.url()}`);
   }
-  return href; // "/owners/{id}/pets/new"
+  return `/owners/${match[1]}/pets/new`;
 }
 
 export function uniqueSuffix(): string {
