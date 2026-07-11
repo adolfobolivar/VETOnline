@@ -41,6 +41,25 @@ workflow, and browser scope. Update this file's tables when tests are added, ren
 | `A1 > blank mandatory fields show field errors and the form-level alert` | A1/BR-001: four blank fields each show "This field is required.", plus the form-level alert; visual baseline for the error state |
 | `A1 > malformed telephone shows the exact BR-002 message` | A1/BR-002: bad telephone shows "Telephone must be exactly 10 digits." |
 
+## `uc004-find-owners.spec.ts` — UC-004 Find Owners by Last Name
+
+| Test | Checks |
+| :--- | :--- |
+| `main flow: multiple matches render the owners list` | Main flow: two owners sharing a prefix both appear in `.owner-row`s with name/address/phone/pet-count |
+| `find owners form matches the design system baseline` | Visual baseline: empty search form |
+| `A1 > returns owners rather than a validation error` | A1/BR-003: an empty search returns results (at least one), not a validation error |
+| `A2 > navigates directly to the Owner Details view` | A2: a search matching exactly one owner redirects straight to `/owners/{id}`, skipping the list |
+| `A3 > attaches the "not found" error to the last-name field` | A3: a non-matching search shows "not found" on the field; visual baseline for the error state (fixed search term — see the test's own comment) |
+| `BR-001: prefix match is case-sensitive` | BR-001: the same prefix in the wrong case does not match (Postgres's case-sensitive default `LIKE`) |
+| `A4 > fetches and appends the next chunk as the sentinel scrolls into view` | A4/BR-002: 21 owners sharing a prefix force a second page; scrolling to the sentinel appends the 21st row. Slow (~45s: creates 21 owners through the real UI, since `PAGE_SIZE` is a fixed 20) — has its own extended `test.setTimeout`. |
+
+## `uc005-owner-details.spec.ts` — UC-005 View Owner Details
+
+| Test | Checks |
+| :--- | :--- |
+| `main flow: owner info, pets (alphabetical), visits (chronological), and action links` | Main flow end to end: owner fields, BR-002 (pets alphabetical regardless of creation order), BR-001 (visits chronological regardless of entry order), all four action links (Edit Owner/Add New Pet/Edit Pet/Add Visit); full-page visual baseline (fixed owner name — see the test's own comment) |
+| `A1 > shows the not-found error view` | A1: a nonexistent owner id resolves to the not-found error view |
+
 ## `uc007-add-pet.spec.ts` — UC-007 Add Pet to Owner
 
 | Test | Checks |
