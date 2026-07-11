@@ -28,7 +28,7 @@ resource "aws_api_gateway_gateway_response" "default_4xx" {
   response_type = "DEFAULT_4XX"
 
   response_parameters = {
-    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'*'"
+    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'${var.cors_allow_origin}'"
     "gatewayresponse.header.Access-Control-Allow-Headers" = "'*'"
   }
 }
@@ -38,7 +38,7 @@ resource "aws_api_gateway_gateway_response" "default_5xx" {
   response_type = "DEFAULT_5XX"
 
   response_parameters = {
-    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'*'"
+    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'${var.cors_allow_origin}'"
     "gatewayresponse.header.Access-Control-Allow-Headers" = "'*'"
   }
 }
@@ -282,8 +282,12 @@ resource "aws_api_gateway_deployment" "this" {
       aws_api_gateway_integration.oups_lambda.id,
       aws_api_gateway_method.oups_options.id,
       aws_api_gateway_integration.oups_options_lambda.id,
+      # .id alone never changes on an in-place edit (e.g. response_parameters) — hash the
+      # content too, or a CORS-origin change here silently never reaches the deployed stage.
       aws_api_gateway_gateway_response.default_4xx.id,
+      aws_api_gateway_gateway_response.default_4xx.response_parameters,
       aws_api_gateway_gateway_response.default_5xx.id,
+      aws_api_gateway_gateway_response.default_5xx.response_parameters,
     ]))
   }
 

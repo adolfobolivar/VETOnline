@@ -80,11 +80,10 @@ resource "aws_lambda_function" "app" {
 
   environment {
     variables = {
-      DB_SECRET_ARN = var.aurora_master_user_secret_arn
-      DB_HOST       = var.aurora_cluster_endpoint
-      DB_NAME       = var.aurora_database_name
-      # CORS_ALLOW_ORIGIN intentionally not set here — app/main.py defaults it to "*" until
-      # the frontend/CloudFront layer exists; set it here once that domain is real.
+      DB_SECRET_ARN     = var.aurora_master_user_secret_arn
+      DB_HOST           = var.aurora_cluster_endpoint
+      DB_NAME           = var.aurora_database_name
+      CORS_ALLOW_ORIGIN = var.cors_allow_origin
     }
   }
 

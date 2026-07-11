@@ -23,10 +23,9 @@ from app.services.exceptions import DuplicateNameError, FutureBirthDateError, No
 # is needed either.
 app = FastAPI(title="VETOnline API")
 
-# Temporary permissive CORS: architecture.md §2.2 scopes this to the CloudFront distribution
-# domain, which doesn't exist yet (frontend not built). CORS_ALLOW_ORIGIN defaults to "*" for
-# now — set it to the real CloudFront domain (Terraform env var) once that layer exists, no
-# code change needed at that point. The Authorization header carries a bearer JWT (not
+# Scoped to the CloudFront distribution domain per architecture.md §2.2, via the
+# CORS_ALLOW_ORIGIN env var (Terraform, application module). Defaults to "*" only when unset
+# (e.g. running locally without that var). The Authorization header carries a bearer JWT (not
 # cookies), so allow_credentials is intentionally left at its default False.
 app.add_middleware(
     CORSMiddleware,
