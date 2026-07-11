@@ -5,8 +5,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from mangum import Mangum
 
-from app.db.models import Owner, Pet, PetType  # noqa: F401 - registers ORM models before use
-from app.routers import owners, pets
+from app.db.models import (  # noqa: F401 - registers ORM models before use
+    Owner,
+    Pet,
+    PetType,
+    Specialty,
+    Veterinarian,
+    Visit,
+    vet_specialty,
+)
+from app.routers import demo, owners, pets, veterinarians, visits
 from app.services.exceptions import DuplicateNameError, FutureBirthDateError, NotFoundError
 
 # No auth middleware here: the Cognito Authorizer at API Gateway already rejects
@@ -29,6 +37,9 @@ app.add_middleware(
 
 app.include_router(owners.router)
 app.include_router(pets.router)
+app.include_router(visits.router)
+app.include_router(veterinarians.router)
+app.include_router(demo.router)
 
 
 # Registered once here, not per-router, so individual routers never need a try/except — that's

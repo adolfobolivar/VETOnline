@@ -29,7 +29,7 @@ resource "null_resource" "lambda_build" {
   }
 
   provisioner "local-exec" {
-    command = "${local.backend_dir}/scripts/build_lambda.sh ${local.build_dir}"
+    command = "${local.backend_dir}/scripts/build_lambda.sh ${local.build_dir} app"
   }
 }
 
