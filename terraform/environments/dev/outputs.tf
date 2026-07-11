@@ -23,3 +23,14 @@ output "cognito_user_pool_client_id" {
 output "aws_region" {
   value = local.input.aws_region
 }
+
+output "e2e_test_username" {
+  value       = module.cognito.e2e_test_username
+  description = "For frontend/.env.test (testing.md §5) — a dedicated, non-staff Cognito account for Playwright E2E runs."
+}
+
+output "e2e_test_password" {
+  value       = module.cognito.e2e_test_password
+  sensitive   = true
+  description = "Paired with e2e_test_username. Fetch via: ./with-creds.sh terraform output -raw e2e_test_password"
+}

@@ -21,6 +21,10 @@ they read as conscious choices rather than oversights:
   it) instead of §2.2's CloudFront-domain-scoped policy — there is no CloudFront distribution yet to scope it to,
   since the frontend hasn't been built. Set that env var to the real distribution domain once it exists; no code
   change needed at that point.
+- The Playwright E2E suite's dedicated test account (testing.md §5) lives in the same Cognito pool as real clinic
+  staff, not a second, fully isolated pool — one clearly-fake account, kept out of `clinic_users.yaml`, rather than
+  standing up parallel auth/database infrastructure this single-developer, no-CI-yet phase doesn't need. Revisit
+  alongside the rest of this list once there's a real CI pipeline.
 
 None of these are architectural limitations — they are conscious choices to move fast now, with a clear list of what
 to revisit once the prototype earns further investment.
