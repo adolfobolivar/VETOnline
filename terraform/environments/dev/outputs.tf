@@ -34,3 +34,17 @@ output "e2e_test_password" {
   sensitive   = true
   description = "Paired with e2e_test_username. Fetch via: ./with-creds.sh terraform output -raw e2e_test_password"
 }
+
+output "frontend_url" {
+  value       = "https://${module.frontend.cloudfront_domain_name}"
+  description = "The deployed frontend's public URL."
+}
+
+output "frontend_s3_bucket_name" {
+  value = module.frontend.s3_bucket_name
+}
+
+output "frontend_cloudfront_distribution_id" {
+  value       = module.frontend.cloudfront_distribution_id
+  description = "For manual cache invalidation outside of a Terraform apply."
+}
