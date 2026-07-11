@@ -14,7 +14,7 @@ from app.db.models import (  # noqa: F401 - registers ORM models before use
     Visit,
     vet_specialty,
 )
-from app.routers import demo, owners, pets, veterinarians, visits
+from app.routers import demo, owners, pet_types, pets, veterinarians, visits
 from app.services.exceptions import DuplicateNameError, FutureBirthDateError, NotFoundError
 
 # No auth middleware here: the Cognito Authorizer at API Gateway already rejects
@@ -39,6 +39,7 @@ app.include_router(owners.router)
 app.include_router(pets.router)
 app.include_router(visits.router)
 app.include_router(veterinarians.router)
+app.include_router(pet_types.router)
 app.include_router(demo.router)
 
 

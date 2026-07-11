@@ -44,3 +44,6 @@ terraform/modules/*/.build/
 # Editors
 .vscode/
 .idea/
+
+# Playwright MCP output (screenshots/traces from ad hoc manual testing sessions)
+.playwright-mcp/

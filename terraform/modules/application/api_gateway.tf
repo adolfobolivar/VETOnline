@@ -16,6 +16,33 @@ resource "aws_api_gateway_rest_api" "this" {
   }
 }
 
+# A request the Cognito Authorizer itself rejects (missing/invalid/expired JWT) never reaches
+# the Lambda, so FastAPI's CORSMiddleware never gets a chance to add CORS headers to that
+# response — API Gateway generates it directly. Without this, the browser can't even read a
+# real 401 (UnauthorizedException, MISSING_AUTHENTICATION_TOKEN, etc.); fetch() throws a CORS
+# error instead, which the frontend's silent-refresh-then-redirect-to-login logic (UC-011 A2)
+# can't distinguish from a network failure. DEFAULT_4XX/5XX cover every gateway-level error
+# generically, not just this one authorizer case.
+resource "aws_api_gateway_gateway_response" "default_4xx" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  response_type = "DEFAULT_4XX"
+
+  response_parameters = {
+    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'*'"
+    "gatewayresponse.header.Access-Control-Allow-Headers" = "'*'"
+  }
+}
+
+resource "aws_api_gateway_gateway_response" "default_5xx" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  response_type = "DEFAULT_5XX"
+
+  response_parameters = {
+    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'*'"
+    "gatewayresponse.header.Access-Control-Allow-Headers" = "'*'"
+  }
+}
+
 # Access logging + X-Ray on the stage below satisfy architecture.md §6: "Every incoming
 # request must be tagged with a unique Trace/Correlation ID [...] captured at the API Gateway
 # level." $context.requestId is that correlation ID.
@@ -71,6 +98,34 @@ resource "aws_api_gateway_integration" "proxy_lambda" {
   uri                     = aws_lambda_function.app.invoke_arn
 }
 
+# CORS preflight: browsers send an unauthenticated OPTIONS request before any "non-simple"
+# request (which every call from apiClient.ts is, since it always sets Content-Type:
+# application/json and often Authorization) — that request never carries the Cognito JWT by
+# design, so it must bypass the authorizer entirely. Without this, "ANY" (above) would swallow
+# OPTIONS too and reject every preflight with 401 before it ever reaches FastAPI's
+# CORSMiddleware, which is what actually generates the Access-Control-Allow-* response.
+# Explicit OPTIONS methods take precedence over a sibling "ANY"/broader method for that verb,
+# so this doesn't conflict with proxy_any.
+resource "aws_api_gateway_method" "proxy_options" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  resource_id   = aws_api_gateway_resource.proxy.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+
+  request_parameters = {
+    "method.request.path.proxy" = true
+  }
+}
+
+resource "aws_api_gateway_integration" "proxy_options_lambda" {
+  rest_api_id             = aws_api_gateway_rest_api.this.id
+  resource_id             = aws_api_gateway_resource.proxy.id
+  http_method             = aws_api_gateway_method.proxy_options.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.app.invoke_arn
+}
+
 # {proxy+} only matches paths with at least one segment — the bare "/" needs its own method.
 resource "aws_api_gateway_method" "root_any" {
   rest_api_id   = aws_api_gateway_rest_api.this.id
@@ -84,6 +139,112 @@ resource "aws_api_gateway_integration" "root_lambda" {
   rest_api_id             = aws_api_gateway_rest_api.this.id
   resource_id             = aws_api_gateway_rest_api.this.root_resource_id
   http_method             = aws_api_gateway_method.root_any.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.app.invoke_arn
+}
+
+resource "aws_api_gateway_method" "root_options" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  resource_id   = aws_api_gateway_rest_api.this.root_resource_id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "root_options_lambda" {
+  rest_api_id             = aws_api_gateway_rest_api.this.id
+  resource_id             = aws_api_gateway_rest_api.this.root_resource_id
+  http_method             = aws_api_gateway_method.root_options.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.app.invoke_arn
+}
+
+# Anonymous-access exceptions to the {proxy+} catch-all's blanket Cognito Authorizer, per
+# UC-002 BR-003 and requirements.md NFR-002 (JWT enforcement is scoped to "owners, pets,
+# visits" specifically, not every endpoint). API Gateway routes a literal path segment like
+# "veterinarians" ahead of the greedy {proxy+} sibling automatically, so these two resources
+# take precedence over the catch-all for their exact paths without any conflict.
+#
+# checkov (CKV_AWS_59, "no open access to back-end resources") fires on both methods below —
+# deliberately not addressed: "open access" is the correct, spec-mandated behavior here, not an
+# oversight. Every other resource (the {proxy+} catch-all, root) keeps the Cognito Authorizer.
+resource "aws_api_gateway_resource" "veterinarians" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+  parent_id   = aws_api_gateway_rest_api.this.root_resource_id
+  path_part   = "veterinarians"
+}
+
+resource "aws_api_gateway_method" "veterinarians_get" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  resource_id   = aws_api_gateway_resource.veterinarians.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "veterinarians_lambda" {
+  rest_api_id             = aws_api_gateway_rest_api.this.id
+  resource_id             = aws_api_gateway_resource.veterinarians.id
+  http_method             = aws_api_gateway_method.veterinarians_get.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.app.invoke_arn
+}
+
+# Same CORS-preflight need as proxy_options — even an already-anonymous GET still needs an
+# unauthenticated OPTIONS sibling, since apiClient.ts's Content-Type header makes every request
+# "non-simple" and preflighted regardless of whether the actual method requires a JWT.
+resource "aws_api_gateway_method" "veterinarians_options" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  resource_id   = aws_api_gateway_resource.veterinarians.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "veterinarians_options_lambda" {
+  rest_api_id             = aws_api_gateway_rest_api.this.id
+  resource_id             = aws_api_gateway_resource.veterinarians.id
+  http_method             = aws_api_gateway_method.veterinarians_options.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.app.invoke_arn
+}
+
+# UC-010 BR-005: the /oups demo route is reachable from the welcome page's "Error" nav link
+# (UC-001), which is itself anonymous — so /oups needs to be too.
+resource "aws_api_gateway_resource" "oups" {
+  rest_api_id = aws_api_gateway_rest_api.this.id
+  parent_id   = aws_api_gateway_rest_api.this.root_resource_id
+  path_part   = "oups"
+}
+
+resource "aws_api_gateway_method" "oups_get" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  resource_id   = aws_api_gateway_resource.oups.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "oups_lambda" {
+  rest_api_id             = aws_api_gateway_rest_api.this.id
+  resource_id             = aws_api_gateway_resource.oups.id
+  http_method             = aws_api_gateway_method.oups_get.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.app.invoke_arn
+}
+
+resource "aws_api_gateway_method" "oups_options" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  resource_id   = aws_api_gateway_resource.oups.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "oups_options_lambda" {
+  rest_api_id             = aws_api_gateway_rest_api.this.id
+  resource_id             = aws_api_gateway_resource.oups.id
+  http_method             = aws_api_gateway_method.oups_options.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.app.invoke_arn
@@ -105,8 +266,24 @@ resource "aws_api_gateway_deployment" "this" {
       aws_api_gateway_resource.proxy.id,
       aws_api_gateway_method.proxy_any.id,
       aws_api_gateway_integration.proxy_lambda.id,
+      aws_api_gateway_method.proxy_options.id,
+      aws_api_gateway_integration.proxy_options_lambda.id,
       aws_api_gateway_method.root_any.id,
       aws_api_gateway_integration.root_lambda.id,
+      aws_api_gateway_method.root_options.id,
+      aws_api_gateway_integration.root_options_lambda.id,
+      aws_api_gateway_resource.veterinarians.id,
+      aws_api_gateway_method.veterinarians_get.id,
+      aws_api_gateway_integration.veterinarians_lambda.id,
+      aws_api_gateway_method.veterinarians_options.id,
+      aws_api_gateway_integration.veterinarians_options_lambda.id,
+      aws_api_gateway_resource.oups.id,
+      aws_api_gateway_method.oups_get.id,
+      aws_api_gateway_integration.oups_lambda.id,
+      aws_api_gateway_method.oups_options.id,
+      aws_api_gateway_integration.oups_options_lambda.id,
+      aws_api_gateway_gateway_response.default_4xx.id,
+      aws_api_gateway_gateway_response.default_5xx.id,
     ]))
   }
 
