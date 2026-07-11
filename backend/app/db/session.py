@@ -23,7 +23,10 @@ def _database_url_from_secrets_manager() -> str:
     return f"postgresql+psycopg://{secret['username']}:{secret['password']}@{host}:{port}/{dbname}"
 
 
-def _get_database_url() -> str:
+def get_database_url() -> str:
+    """Shared by this module and migration_handler.py (the migration Lambda) — kept in
+    app/db/session.py rather than duplicated, since both need the same local-dev-vs-Secrets-
+    Manager logic."""
     # Local development: a full connection string, set directly.
     url = os.environ.get("DATABASE_URL")
     if url:
@@ -45,7 +48,7 @@ def _get_database_url() -> str:
 # NullPool, not a large in-process pool: each Lambda execution environment holds one
 # connection, bounded by reserved concurrency (architecture.md §2.4) — a big client-side pool
 # would just recreate the connection-exhaustion problem that setting is meant to avoid.
-engine = create_engine(_get_database_url(), poolclass=NullPool)
+engine = create_engine(get_database_url(), poolclass=NullPool)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

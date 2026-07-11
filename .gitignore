@@ -37,8 +37,9 @@ terraform/environments/*/secrets.yaml
 terraform/environments/*/clinic_users.yaml
 
 # Lambda packaging build artifacts (zip + cross-platform installed dependencies) — rebuilt by
-# build_lambda.sh on every apply, never committed.
-terraform/modules/application/.build/
+# build_lambda.sh on every apply, never committed. Wildcarded so it covers every Lambda-backed
+# module (application, migration, and any added later), not just the first one.
+terraform/modules/*/.build/
 
 # Editors
 .vscode/

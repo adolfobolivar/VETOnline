@@ -86,3 +86,14 @@ module "application" {
   cognito_user_pool_arn         = module.cognito.user_pool_arn
   lambda_reserved_concurrency   = local.input.lambda_reserved_concurrency
 }
+
+module "migration" {
+  source = "../../modules/migration"
+
+  environment                   = local.input.environment
+  private_subnet_ids            = module.network.private_subnet_ids
+  lambda_security_group_id      = module.application.lambda_security_group_id
+  aurora_cluster_endpoint       = module.aurora.cluster_endpoint
+  aurora_database_name          = module.aurora.database_name
+  aurora_master_user_secret_arn = module.aurora.master_user_secret_arn
+}
