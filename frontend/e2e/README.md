@@ -19,6 +19,18 @@ workflow, and browser scope. Update this file's tables when tests are added, ren
   write real rows (owners/pets, tagged with an `E2E-`/timestamp-suffixed last name for
   recognizability). There is no separate E2E environment in this prototype phase
   (architecture.md §0).
+- **Cleaning up test data:** nothing deletes these rows automatically (no owner/pet delete use
+  case exists to call, and there's no CI pipeline yet to hook a teardown into — architecture.md
+  §0), so repeated local runs accumulate rows in `dev`. Owners these tests create always share
+  one of two fixed `first_name`/`telephone` fingerprints (`helpers.ts`'s `createOwnerId`, or
+  `uc003-add-owner.spec.ts`'s own inline form data — see `migration_handler.py`'s
+  `_cleanup_e2e_test_data` for the exact values), so periodically clear them out with (run from
+  `terraform/environments/dev/`):
+  `./with-creds.sh aws lambda invoke --function-name dev-vetonline-migration --region $(terraform output -raw aws_region) --payload '{"action":"cleanup_e2e_test_data"}' --cli-binary-format raw-in-base64-out /dev/stdout`
+  (`--region` is required — the AWS CLI, unlike Terraform's provider block, has no other source
+  for it here). This reuses the migration Lambda's existing Aurora access rather than a separate
+  one (architecture.md §2.4). It's safe to run any time; a real clinic owner would never match
+  either fingerprint.
 
 ## `uc011-login.spec.ts` — UC-011 Clinic User Login, plus UC-010's auth boundary
 
