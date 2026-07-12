@@ -21,6 +21,9 @@ they read as conscious choices rather than oversights:
   staff, not a second, fully isolated pool — one clearly-fake account, kept out of `clinic_users.yaml`, rather than
   standing up parallel auth/database infrastructure this single-developer, no-CI-yet phase doesn't need. Revisit
   alongside the rest of this list once there's a real CI pipeline.
+- The Playwright E2E suite runs against the real `dev` Aurora database, and the data it creates isn't deleted
+  automatically after a run — there's no CI pipeline yet to hook an automated teardown into. It's deleted manually
+  instead; see `frontend/e2e/README.md` for the current procedure.
 - The frontend CloudFront distribution uses AWS's default certificate (`*.cloudfront.net`) rather than a custom
   domain + ACM certificate. AWS hard-locks the viewer-facing security policy to TLSv1 whenever
   `CloudFrontDefaultCertificate` is true — `minimum_protocol_version` is accepted by the API but silently ignored —
