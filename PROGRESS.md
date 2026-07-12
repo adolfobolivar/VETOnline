@@ -7,6 +7,70 @@ This is a status tracker, unlike `docs/guidelines/*.md` (which are strategy/deci
 don't track implementation status — see `CLAUDE.md`). If you're looking for *why* something is built a certain way,
 that's `architecture.md`/`testing.md`/the use case specs; this file only answers *is it built yet*.
 
+## Current Status: What Actually Serves This Page
+
+Every AWS service below is deployed and live in `dev` (verified in a real browser this session — see the
+Infrastructure checklist further down). This traces one page load, one login, and one authenticated API call end
+to end, from the browser's perspective, so "what's live right now" is a diagram, not a guess.
+
+```mermaid
+sequenceDiagram
+    actor User as End User (Browser)
+    participant CF as CloudFront (frontend CDN)
+    participant S3 as S3 (frontend bucket)
+    participant COG as Cognito (user pool)
+    participant APIGW as API Gateway (REST + Cognito Authorizer)
+    participant LAM as Lambda (FastAPI app)
+    participant NAT as NAT Gateway
+    participant SM as Secrets Manager
+    participant DB as Aurora Serverless v2 (Postgres)
+    participant OBS as CloudWatch / X-Ray
+
+    rect rgb(240, 248, 255)
+    Note over User,S3: 1. Load the app (first visit or hard refresh)
+    User->>CF: GET / (HTTPS)
+    CF->>S3: Origin fetch via Origin Access Control (cache miss)
+    S3-->>CF: index.html + JS/CSS bundle
+    CF-->>User: 200 OK (now cached at the edge for next visit)
+    end
+
+    rect rgb(255, 250, 240)
+    Note over User,COG: 2. Log in (UC-011)
+    User->>COG: SRP auth (username + password)
+    COG-->>User: ID, access, and refresh JWTs
+    end
+
+    rect rgb(240, 255, 240)
+    Note over User,OBS: 3. Authenticated API call (e.g. UC-004 Find Owners)
+    User->>APIGW: GET /owners with Authorization header (Bearer JWT)
+    APIGW->>COG: Validate JWT (Cognito Authorizer)
+    COG-->>APIGW: Claims OK
+    APIGW-->>OBS: Access log entry (every request)
+    APIGW->>LAM: Invoke (AWS_PROXY integration)
+    opt Cold start only, cached in memory afterward
+        LAM->>NAT: HTTPS
+        NAT->>SM: GetSecretValue (DB credentials)
+        SM-->>NAT: Credentials
+        NAT-->>LAM: Credentials
+    end
+    LAM->>DB: SQL query (inside the VPC, no NAT/internet hop)
+    DB-->>LAM: Rows
+    LAM-->>OBS: Logs + X-Ray trace segment
+    LAM-->>APIGW: JSON response
+    APIGW-->>User: 200 OK + JSON (CORS scoped to the CloudFront domain from step 1)
+    end
+```
+
+**Every AWS service in this diagram is used by a real, live request** — nothing here is aspirational. Three more
+services exist but deliberately don't appear above because they never sit in an end user's request path:
+
+- **IAM** — not a network hop; it authorizes every arrow above (API Gateway → Lambda, Lambda → Secrets Manager,
+  Lambda → Aurora) as a policy check internal to each service.
+- **A second Lambda** (the migration Lambda, `architecture.md` §2.4) — runs `alembic upgrade head` and the E2E
+  test-data cleanup action, both invoked manually as deployment/maintenance steps, never by a user's browser.
+- **S3 + DynamoDB for Terraform state** (`architecture.md` §4.1) — exists purely so `terraform apply` has somewhere
+  to keep state and a lock table; no runtime relationship to the running application at all.
+
 ## Specifications (Steps 1–7 of README's "Spec-Driven Process")
 
 - [x] Vision (`docs/guidelines/vision.md`)
