@@ -11,6 +11,16 @@ features, and multi-clinic/multi-tenant support.
 
 ---
 
+## 📈 Progress Tracking
+
+`PROGRESS.md` (repo root) is a living status snapshot — what's built and what's next, kept separate from the
+strategy-only guidelines below (which deliberately don't track implementation status). Read it at the start of a
+session instead of asking the user what's next. Update it — checking off what a change just finished, adding any
+gap discovered along the way — in the same commit/PR that does the work, not as a separate follow-up. If it ever
+disagrees with the actual repo state, the repo wins; fix the file, not the other way around.
+
+---
+
 ## 📚 Specifications (source of truth)
 
 This project is built specs-first. Before implementing or changing behavior, check:

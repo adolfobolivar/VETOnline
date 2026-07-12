@@ -12,6 +12,8 @@ experiment — see `docs/guidelines/vision.md` for what it actually is and who i
 
 Two groups, on purpose: everything under **Specifications** is text written before any code, and read by both
 humans and the Construction skills; everything under **Implementation** is either those skills or what they produce.
+One file sits outside both: `PROGRESS.md` — a live status snapshot (what's built, what's next), kept up to date by
+the AI coding tool as it works rather than written up front like the specs below.
 
 ### Specifications
 
@@ -31,10 +33,9 @@ humans and the Construction skills; everything under **Implementation** is eithe
 - `aiup-fastapi-react/` — the Construction-phase plugin for this project's stack (FastAPI/React/Terraform): the
   skills that read the specs above and produce the code below. Built because no equivalent existed in the AIUP
   marketplace; see its own README for details.
-- `backend/` *(not yet created)* — FastAPI + SQLAlchemy/Alembic, produced by `/implement-backend` and
-  `/alembic-migration`.
-- `frontend/` *(not yet created)* — React, produced by `/implement-frontend`, following `design-system.md`.
-- `terraform/` *(not yet created)* — AWS infrastructure, produced by `/terraform-module`.
+- `backend/` — FastAPI + SQLAlchemy/Alembic, produced by `/implement-backend` and `/alembic-migration`.
+- `frontend/` — React, produced by `/implement-frontend`, following `design-system.md`.
+- `terraform/` — AWS infrastructure, produced by `/terraform-module`.
 
 ## Local Prerequisites (macOS)
 
@@ -170,3 +171,7 @@ Background material and prior art informing this experiment and the architecture
   once you actually try to build and run the thing. Both are now called out explicitly (architecture.md §2.3,
   `/terraform-module`'s "Application Layer Prerequisite") so the next pass doesn't rediscover them the hard way. →
   `terraform/modules/application/`.
+- **Specs answer "why," not "what's left":** having every decision documented in `docs/guidelines/` didn't answer
+  "what should we build next" — that took re-deriving from git history and cross-referencing the traceability matrix
+  by hand each time, repeatedly. The fix is a separate, AI-maintained status file, not more detail in the strategy
+  docs (which stay implementation-status-free on purpose). → `PROGRESS.md`, `CLAUDE.md`'s "Progress Tracking".
