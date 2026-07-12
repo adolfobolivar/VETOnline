@@ -118,6 +118,18 @@ Steps 2–5 map directly to the `aiup-core` plugin's skills (`requirements`, `en
 skill, since this marketplace's core plugin doesn't (yet) ship one for vision/architecture/testing docs specifically.
 Step 9 mirrors the marketplace's own `aiup-vaadin-jooq` pattern, adapted to a new stack.
 
+## AWS Costs
+
+Cost optimization is a stated goal of this architecture (`architecture.md`), enforced via the cost-allocation
+tagging strategy in §5.3 so spend is actually checkable in AWS Cost Explorer, not assumed.
+
+Most of this stack is genuinely pay-per-use — Lambda, API Gateway, CloudFront, S3, and Cognito only cost money in
+proportion to actual traffic, and are effectively free at this project's low usage. The exceptions are the two
+pieces that can't scale to zero: Aurora Serverless v2 always bills at least its configured minimum capacity even
+when idle, and the NAT Gateway (required for private-subnet Lambdas to reach AWS services like Secrets Manager)
+bills a flat hourly rate regardless of traffic. Those two are the actual cost floor of running this architecture at
+all, independent of how much the app is used — everything else scales down with it.
+
 ## References
 
 Background material and prior art informing this experiment and the architecture decisions made within it:
