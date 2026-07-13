@@ -148,6 +148,17 @@ README's "Spec-Driven Process" — implementation happens only after the specs, 
 there's no separate human-authored portion to break out; that's the whole premise of this repo as an AIUP
 experiment.
 
+## Project Summary (as of 2026-07-13)
+
+| Metric | Value |
+| :--- | :--- |
+| Project Duration | 5 days (Jul 8 – Jul 13, 2026) |
+| Pull Requests Delivered | 27 |
+| Total Commits | 57 |
+| Lines of Code Delivered | 6,351 |
+| Estimated Development Cost (at standard AI usage rates) | $308.67 |
+| AI Subscription Utilization | 26% of weekly plan |
+
 ---
 
 **Maintenance note:** `CLAUDE.md` instructs AI assistants to update this file as part of finishing a unit of work
