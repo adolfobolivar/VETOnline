@@ -64,6 +64,13 @@ resource "aws_rds_cluster" "this" {
   backup_retention_period         = var.db_backup_retention_days
   enabled_cloudwatch_logs_exports = ["postgresql"]
 
+  # RDS Data API (architecture.md §2.4): lets an already-IAM-authenticated caller outside the
+  # VPC (a developer's AWS CLI, this project's AI tooling) run ad hoc queries via the
+  # `rds-data` API + the existing Secrets Manager secret, without a bastion/VPN and without
+  # changing the cluster's network posture — it's still not publicly accessible on 5432, this
+  # is a separate AWS-managed HTTPS endpoint gated entirely by IAM.
+  enable_http_endpoint = true
+
   deletion_protection       = local.is_prod
   skip_final_snapshot       = !local.is_prod
   final_snapshot_identifier = local.is_prod ? "${var.environment}-vetonline-final" : null
