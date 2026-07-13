@@ -93,10 +93,44 @@ services exist but deliberately don't appear above because they never sit in an 
 - [x] Migration Lambda (`alembic upgrade head`, deployed as a pipeline step)
 - [x] Frontend hosting (S3 + CloudFront, OAC, SPA error mapping)
 - [x] CORS scoped to the deployed CloudFront domain (Lambda env var + API Gateway gateway responses)
-- [x] `dev` environment applied and verified live (frontend, API, auth all checked in a real browser)
+- [x] `dev` environment built and verified live at least once (frontend, API, auth all checked in a real browser)
+- [ ] `dev` environment currently running — **torn down 2026-07-13** for cost savings during a 10-day break; see
+  "Environment Teardown / Recreate Runbook" below to bring it back
 - [ ] `prod` environment (not yet provisioned)
 - [ ] Custom domain + ACM certificate (deferred — see `architecture.md` §0's NFR-003 TLS gap)
 - [ ] CI/CD pipeline (deferred — see `architecture.md` §0; all applies so far are manual)
+
+## Environment Teardown / Recreate Runbook
+
+`dev`'s two always-billing pieces regardless of traffic (the NAT Gateway, Aurora Serverless v2's minimum
+capacity — see README's "AWS Costs" section) make it worth tearing the whole environment down rather than
+leaving it running during an extended break. This is a full `terraform destroy` of
+`terraform/environments/dev` — network, Aurora, Cognito, the application layer, the migration Lambda, and the
+frontend all get removed. The remote state backend (`terraform/bootstrap/dev` — the S3 bucket + DynamoDB lock
+table) is intentionally left alone, so recreating is a normal `terraform apply`, not a rebuild from scratch.
+
+**What's lost:** all Aurora data (owners/pets/visits, since `dev` skips a final snapshot on destroy) and the
+Cognito user pool (any provisioned Clinic User, e.g. Maria Perez, will need a fresh temporary password emailed
+again on recreate). The veterinarian directory reseeds itself automatically (it's an Alembic migration now, not
+manually-entered data).
+
+**What changes on recreate:** the frontend (`*.cloudfront.net`) and API Gateway URLs will both be different from
+before — CloudFront/API Gateway don't reuse the same domain. CORS reconfigures itself automatically from the new
+domain (`terraform/environments/dev/main.tf` wires `cors_allow_origin` from the frontend module's output), so
+there's nothing to manually fix.
+
+**To recreate:**
+
+1. `cd terraform/environments/dev && ./with-creds.sh terraform init -backend-config=backend.hcl` (if the local
+   `.terraform/` directory is gone)
+2. `./with-creds.sh terraform apply` — recreates every module; expect the CloudFront distribution to take the
+   usual several minutes to finish deploying
+3. Apply the schema + seed data: invoke the migration Lambda once —
+   `./with-creds.sh aws lambda invoke --function-name dev-vetonline-migration --region $(terraform output -raw aws_region) --payload '{}' --cli-binary-format raw-in-base64-out /tmp/migrate.json`
+4. Get the new frontend URL: `terraform output frontend_url`
+5. If a known password is wanted for a Clinic User again (rather than waiting on Cognito's invitation email),
+   reset it directly: `aws cognito-idp admin-set-user-password --user-pool-id <pool id> --username <email>
+   --password '<new password>' --permanent`
 
 ## Use Cases
 
