@@ -130,6 +130,24 @@ they're test-coverage debt, not broken behavior.
 3. Everything else in `architecture.md` §0's prototype-phase trade-off list (CI/CD, custom domain, alerting, WAF) —
    revisit as a batch once there's a concrete trigger (e.g., real users, a second developer) rather than piecemeal.
 
+## Lines of Code
+
+Counted with `cloc` against `git ls-files` (so only what's actually committed — no `node_modules`, `.venv`,
+Terraform's `.build`/`.terraform`, lockfiles, or visual-regression baseline images), blank lines and comments
+excluded.
+
+| Area | Files | Lines of Code | Primary Languages |
+| :--- | :-: | :-: | :--- |
+| Backend (`backend/`) | 50 | 1,456 | Python (1,240), Markdown, shell, TOML |
+| Frontend (`frontend/`) | 51 | 3,373 | TypeScript (2,382), CSS (733), Markdown, JSON |
+| Terraform (`terraform/`) | 42 | 1,522 | HCL (1,478), YAML, shell |
+| **Total** | **143** | **6,351** | |
+
+Every line above was written by Claude Code (model: **Claude Sonnet 5**) across this project's sessions (see
+README's "Spec-Driven Process" — implementation happens only after the specs, via the Construction skills) —
+there's no separate human-authored portion to break out; that's the whole premise of this repo as an AIUP
+experiment.
+
 ---
 
 **Maintenance note:** `CLAUDE.md` instructs AI assistants to update this file as part of finishing a unit of work
