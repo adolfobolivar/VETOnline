@@ -94,8 +94,8 @@ services exist but deliberately don't appear above because they never sit in an 
 - [x] Frontend hosting (S3 + CloudFront, OAC, SPA error mapping)
 - [x] CORS scoped to the deployed CloudFront domain (Lambda env var + API Gateway gateway responses)
 - [x] `dev` environment built and verified live at least once (frontend, API, auth all checked in a real browser)
-- [ ] `dev` environment currently running — **torn down 2026-07-13** for cost savings during a 10-day break; see
-  "Environment Teardown / Recreate Runbook" below to bring it back
+- [ ] `dev` environment currently running — **torn down 2026-07-13** for cost savings; see "Environment
+  Teardown / Recreate Runbook" below to bring it back
 - [ ] `prod` environment (not yet provisioned)
 - [ ] Custom domain + ACM certificate (deferred — see `architecture.md` §0's NFR-003 TLS gap)
 - [ ] CI/CD pipeline (deferred — see `architecture.md` §0; all applies so far are manual)
